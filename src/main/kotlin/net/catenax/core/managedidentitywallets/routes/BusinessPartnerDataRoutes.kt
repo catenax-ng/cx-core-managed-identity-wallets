@@ -39,8 +39,8 @@ fun Route.businessPartnerDataRoutes(businessPartnerDataService: BusinessPartnerD
     }
 }
 
-val dataUpdateRequestDtoExample = mapOf(
-    "demo" to BusinessPartnerDataUpdateRequestDto(
+val dataUpdateDtoExample = mapOf(
+    "demo" to BusinessPartnerDataDto(
         bpn = "BPNL000000000001",
         identifiers = listOf(
           IdentifierDto(

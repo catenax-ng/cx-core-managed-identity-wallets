@@ -29,7 +29,7 @@ class BusinessPartnerDataServiceImpl(private val walletService: WalletService,
     //  However, it should be checked if the issued credentials need to be updated, in this case
     //  the old credentials should be revoked and deleted from database and new should be issued
     // TODO: notify if issue credentials failed
-    private suspend fun issueAndUpdateCatenaXCredentials(businessPartnerData: BusinessPartnerDataUpdateRequestDto) {
+    private suspend fun issueAndUpdateCatenaXCredentials(businessPartnerData: BusinessPartnerDataDto) {
         val bpn = businessPartnerData.bpn
         if (businessPartnerData.names.isNotEmpty()) {
             businessPartnerData.names.forEach {
@@ -77,7 +77,7 @@ class BusinessPartnerDataServiceImpl(private val walletService: WalletService,
 
     override suspend fun pullDataAndUpdateCatenaXCredentialsAsync() {
         val listOfBpns = getBpnOfAllCreatedWallets()
-        val extractedBPData = mutableListOf<BusinessPartnerDataUpdateRequestDto>()
+        val extractedBPData = mutableListOf<BusinessPartnerDataDto>()
         val accessToken = getAccessToken()
         listOfBpns.forEach { bpn ->
             try {
@@ -99,7 +99,7 @@ class BusinessPartnerDataServiceImpl(private val walletService: WalletService,
         return walletService.getAllBpns()
     }
 
-    private suspend fun getBusinessDate(bpn: String, accessToken: String): BusinessPartnerDataUpdateRequestDto {
+    private suspend fun getBusinessDate(bpn: String, accessToken: String): BusinessPartnerDataDto {
         val requestUrl = "${bpdmConfig.url}/api/catena/business-partner/$bpn?idType=BPN"
         val response: HttpResponse = client.get(requestUrl) {
             headers {
@@ -120,7 +120,7 @@ class BusinessPartnerDataServiceImpl(private val walletService: WalletService,
             }
         )
         val accessToken: AccessToken = Json.decodeFromString(response.readText())
-        return accessToken.access_token
+        return accessToken.accessToken
     }
 
     private fun isNewCredential(bpn: String, uuid: String, type: String): Boolean {

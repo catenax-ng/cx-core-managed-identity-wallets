@@ -5,7 +5,6 @@ import io.ktor.client.features.logging.*
 import io.ktor.client.features.observer.*
 import kotlinx.coroutines.Deferred
 import net.catenax.core.managedidentitywallets.models.BPMDConfig
-import net.catenax.core.managedidentitywallets.models.BusinessPartnerDataUpdateRequestDto
 
 interface BusinessPartnerDataService {
 

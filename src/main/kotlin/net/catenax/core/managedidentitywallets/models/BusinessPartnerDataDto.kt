@@ -1,14 +1,15 @@
 package net.catenax.core.managedidentitywallets.models
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import io.bkbn.kompendium.annotations.Field
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class AccessToken(
-    val access_token: String,
-    val expires_in: Int,
+    @SerialName("access_token")
+    val accessToken: String,
+    @SerialName("expires_in")
+    val expiresIn: Int,
     @SerialName("refresh_expires_in")
     val refreshExpiresIn: Int,
     @SerialName("token_type")
@@ -112,7 +113,7 @@ data class LegalFormDto(
 )
 
 @Serializable
-data class BusinessPartnerDataUpdateRequestDto(
+data class BusinessPartnerDataDto(
     @Field(description = "The BPN to which this update record applies to", name = "bpn")
     val bpn: String,
     @Field(description = "The identifiers of the record", name = "identifiers")
