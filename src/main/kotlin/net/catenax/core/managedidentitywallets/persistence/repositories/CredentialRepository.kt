@@ -14,6 +14,10 @@ class CredentialRepository {
         VerifiableCredentials.deleteWhere { VerifiableCredentials.walletId eq walletId }
     }
 
+    fun deleteCredential(credentialId: String) {
+        VerifiableCredentials.deleteWhere { VerifiableCredentials.credentialId eq credentialId }
+    }
+
     fun getCredentials(
         issuerIdentifier: String?,
         holderIdentifier: String?,
