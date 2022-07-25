@@ -73,8 +73,8 @@ fun Application.module(testing: Boolean = false) {
         baseWalletBpn = environment.config.property("wallet.baseWalletBpn").getString()
     )
     val walletService = WalletService.createWithAcaPyService(acaPyConfig, walletRepository, credRepository)
-    val bpdmConfig = BPMDConfig(
-        url = environment.config.property("bpdm.url").getString(),
+    val bpdmConfig = BPDMConfig(
+        url = environment.config.property("bpdm.datapoolUrl").getString(),
         tokenUrl = environment.config.property("bpdm.authUrl").getString(),
         clientId = environment.config.property("bpdm.clientId").getString(),
         clientSecret = environment.config.property("bpdm.clientSecret").getString(),

@@ -4,7 +4,8 @@ import io.ktor.client.*
 import io.ktor.client.features.logging.*
 import io.ktor.client.features.observer.*
 import kotlinx.coroutines.Deferred
-import net.catenax.core.managedidentitywallets.models.BPMDConfig
+import net.catenax.core.managedidentitywallets.models.BPDMConfig
+import org.slf4j.LoggerFactory
 
 interface BusinessPartnerDataService {
 
@@ -17,18 +18,20 @@ interface BusinessPartnerDataService {
     ): Deferred<Boolean>
 
     companion object {
+        private val log = LoggerFactory.getLogger(this::class.java)
+
         fun createBusinessPartnerDataService(walletService: WalletService,
-                                             bpmdConfig: BPMDConfig
+                                             bpdmConfig: BPDMConfig
         ): BusinessPartnerDataService {
             return BusinessPartnerDataServiceImpl(
                 walletService,
-                bpmdConfig,
+                bpdmConfig,
                 HttpClient() {
                     expectSuccess = true
                     install(ResponseObserver) {
                         onResponse { response ->
-                            println("HTTP status: ${response.status.value}")
-                            println("HTTP description: ${response.status.description}")
+                            log.debug("HTTP status: ${response.status.value}")
+                            log.debug("HTTP description: ${response.status.description}")
                         }
                     }
                     install(Logging) {

@@ -67,7 +67,6 @@ class ApplicationTest {
             // put("db.jdbcDriver", System.getenv("CX_DB_JDBC_DRIVER") ?: "org.h2.Driver")
             put("db.jdbcUrl", jdbcUrl)
             put("db.jdbcDriver", System.getenv("CX_DB_JDBC_DRIVER") ?: "org.sqlite.JDBC")
-            put("datapool.url", System.getenv("CX_DATAPOOL_URL") ?: "http://0.0.0.0:8080")
             put("acapy.apiAdminUrl", System.getenv("ACAPY_API_ADMIN_URL") ?: "http://localhost:11000")
             put("acapy.networkIdentifier", System.getenv("ACAPY_NETWORK_IDENTIFIER") ?: ":indy:test")
             put("acapy.adminApiKey", System.getenv("ACAPY_ADMIN_API_KEY") ?: "Hj23iQUsstG!dde")
@@ -83,6 +82,8 @@ class ApplicationTest {
             put("auth.clientId", System.getenv("CX_AUTH_CLIENT_ID") ?: "clientId")
             put("auth.clientSecret", System.getenv("CX_AUTH_CLIENT_SECRET") ?: "clientSecret")
             put("auth.redirectUrl", System.getenv("CX_AUTH_REDIRECT_URL") ?: "http://localhost:8080/callback")
+
+            put("bpdm.datapoolUrl", System.getenv("BPDM_DATAPOOL_URL") ?: "http://0.0.0.0:8080")
         }
         val keepAliveConnection = DriverManager.getConnection(jdbcUrl)
     }
@@ -705,7 +706,7 @@ class ApplicationTest {
             appRoutes(walletService, bpdService)
             configureSerialization()
         }) {
-            handleRequest(HttpMethod.Post, "/api/businessPartnerData") {
+            handleRequest(HttpMethod.Put, "/api/refreshBusinessPartnerData") {
                 addHeader(HttpHeaders.Authorization, "Bearer $UPDATE_TOKEN")
                 addHeader(HttpHeaders.Accept, ContentType.Application.Json.toString())
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())

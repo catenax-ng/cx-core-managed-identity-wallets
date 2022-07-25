@@ -1,9 +1,9 @@
 package net.catenax.core.managedidentitywallets.routes
 
 import io.bkbn.kompendium.auth.Notarized.notarizedAuthenticate
-import io.bkbn.kompendium.core.Notarized.notarizedPost
+import io.bkbn.kompendium.core.Notarized.notarizedPut
 import io.bkbn.kompendium.core.metadata.ResponseInfo
-import io.bkbn.kompendium.core.metadata.method.PostInfo
+import io.bkbn.kompendium.core.metadata.method.PutInfo
 
 import io.ktor.application.*
 import io.ktor.http.*
@@ -16,13 +16,14 @@ import net.catenax.core.managedidentitywallets.services.BusinessPartnerDataServi
 
 fun Route.businessPartnerDataRoutes(businessPartnerDataService: BusinessPartnerDataService) {
 
-    route("/businessPartnerData") {
+    route("/refreshBusinessPartnerData") {
 
         notarizedAuthenticate(AuthConstants.JWT_AUTH_UPDATE) {
-            notarizedPost(
-                PostInfo<Unit, Unit, String>(
-                    summary = "Pull business partner data from BPDM and issue or update credentials",
-                    description = "Pull business partner data from BPDM and create or update verifiable credentials",
+            notarizedPut(
+                PutInfo<Unit, Unit, String>(
+                    summary = "Pull business partner data from BPDM and issue or update verifiable credentials",
+                    description = "Pull business partner data from BPDM and issue" +
+                            "or update related verifiable credentials",
                     requestInfo = null,
                     responseInfo = ResponseInfo(
                         status = HttpStatusCode.Accepted,

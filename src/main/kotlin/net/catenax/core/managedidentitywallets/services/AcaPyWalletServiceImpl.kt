@@ -246,12 +246,6 @@ class AcaPyWalletServiceImpl(
         throw BadRequestException(signedVcResult.error)
     }
 
-    override suspend fun deleteCredential(id: String): Boolean {
-        log.debug("Delete Credential with id $id")
-        transaction { credentialRepository.deleteCredential(id) }
-        return true
-    }
-
     override suspend fun resolveDocument(identifier: String): DidDocumentDto {
         log.debug("Resolve DID Document $identifier")
         val token: String

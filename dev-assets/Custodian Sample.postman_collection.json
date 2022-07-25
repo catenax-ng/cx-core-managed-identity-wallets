@@ -662,13 +662,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{custodian_url}}/api/businessPartnerData",
+					"raw": "{{custodian_url}}/api/refreshBusinessPartnerData",
 					"host": [
 						"{{custodian_url}}"
 					],
 					"path": [
 						"api",
-						"businessPartnerData"
+						"refreshBusinessPartnerData"
 					]
 				}
 			},

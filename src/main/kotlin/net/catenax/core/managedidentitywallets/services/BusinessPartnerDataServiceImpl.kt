@@ -18,7 +18,7 @@ import java.time.Instant
 import java.util.*
 
 class BusinessPartnerDataServiceImpl(private val walletService: WalletService,
-                                     private val bpdmConfig: BPMDConfig,
+                                     private val bpdmConfig: BPDMConfig,
                                      private val client: HttpClient) : BusinessPartnerDataService {
 
     companion object {
@@ -76,12 +76,12 @@ class BusinessPartnerDataServiceImpl(private val walletService: WalletService,
     }
 
     override suspend fun pullDataAndUpdateCatenaXCredentialsAsync() {
-        val listOfBpns = getBpnOfAllCreatedWallets()
+        val listOfBpns = walletService.getAllBpns()
         val extractedBPData = mutableListOf<BusinessPartnerDataDto>()
         val accessToken = getAccessToken()
         listOfBpns.forEach { bpn ->
             try {
-                extractedBPData.add(getBusinessDate(bpn, accessToken))
+                extractedBPData.add(getBusinessPartnerData(bpn, accessToken))
             } catch (e: Exception) {
                 if (!e.message.isNullOrBlank() && "Not Found" in e.message!!) {
                     log.warn("BPN $bpn does not not exist!")
@@ -95,11 +95,8 @@ class BusinessPartnerDataServiceImpl(private val walletService: WalletService,
         }
     }
 
-    private fun getBpnOfAllCreatedWallets(): List<String> {
-        return walletService.getAllBpns()
-    }
-
-    private suspend fun getBusinessDate(bpn: String, accessToken: String): BusinessPartnerDataDto {
+    private suspend fun getBusinessPartnerData(bpn: String, accessToken: String): BusinessPartnerDataDto {
+        // This method need to be replaced by a better and more scalable one to get Data of all Business Partner
         val requestUrl = "${bpdmConfig.url}/api/catena/business-partner/$bpn?idType=BPN"
         val response: HttpResponse = client.get(requestUrl) {
             headers {

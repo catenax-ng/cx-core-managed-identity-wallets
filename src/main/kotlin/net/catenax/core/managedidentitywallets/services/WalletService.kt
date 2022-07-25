@@ -31,8 +31,6 @@ interface WalletService {
 
     suspend fun issueCredential(vcRequest: VerifiableCredentialRequestDto): VerifiableCredentialDto
 
-    suspend fun deleteCredential(id: String): Boolean
-
     suspend fun issueCatenaXCredential(vcCatenaXRequest: VerifiableCredentialRequestWithoutIssuerDto): VerifiableCredentialDto
 
     suspend fun resolveDocument(identifier: String): DidDocumentDto

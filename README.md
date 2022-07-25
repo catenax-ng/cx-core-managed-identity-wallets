@@ -145,7 +145,6 @@ below. Here a few hints on how to set it up:
 7. `CX_AUTH_RESOURCE_ID`: specify the resource id e.g. `ManagedIdentityWallets`
 8. `CX_AUTH_CLIENT_ID`: specify the expected client id, e.g. `ManagedIdentityWallets`
 9. `CX_AUTH_CLIENT_SECRET`: specify the client secret. It can be extracted from keycloak under `realms - catenax - clients - ManagedIdentityWallets - credentials`
-9. `CX_DATAPOOL_URL`: specify the data pool API endpoint, e.g. `http://catenax-bpdm-dev.germanywestcentral.cloudapp.azure.com:8080`
 10. `APP_VERSION`: specify the application version, e.g. `0.0.10` note that github actions replace the value before the helm deployment
 11. `ACAPY_API_ADMIN_URL`: specify the admin url of Aca-Py, e.g. `http://localhost:11000`
 12. `ACAPY_LEDGER_URL`: specify the indy ledger url for registeration, e.g.`https://indy-test.bosch-digital.de/register`
@@ -153,7 +152,7 @@ below. Here a few hints on how to set it up:
 14. `ACAPY_ADMIN_API_KEY`: specify the admin api key of Aca-Py enpoints, e.g. `Hj23iQUsstG!dde`
 15. `CX_BPN`: specify the bpn of the catenaX wallet, e.g. `Bpn111` This wallet should be the first wallet to create.
 
-15. `BPDM_BASE_URL`: specify the base url of the `BPDM` e.g. `https://catenax-bpdm-int.demo.catena-x.net`
+15. `BPDM_DATAPOOL_URL`: specify the base data pool API endpoint of the `BPDM` e.g. `https://catenax-bpdm-int.demo.catena-x.net`
 15. `BPDM_AUTH_CLIENT_ID`: specify the expected client id
 15. `BPDM_AUTH_CLIENT_SECRET=`: specify the expected client secret
 15. `BPDM_AUTH_GRANT_TYPE`: specify the expected grant type e.g. `client_credentials`

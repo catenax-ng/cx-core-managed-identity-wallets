@@ -22,7 +22,7 @@ data class AccessToken(
 )
 
 @Serializable
-data class BPMDConfig(
+data class BPDMConfig(
     val url: String,
     val tokenUrl: String,
     val clientId: String,
@@ -256,5 +256,5 @@ data class SiteDto (
     @Field(description = "Site name", name = "name")
     val name: String,
     @Field(description = "Addresses of the site", name = "addresses")
-    val addresses: AddressDto
+    val addresses: List<AddressDto>
 )

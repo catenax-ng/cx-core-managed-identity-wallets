@@ -36,11 +36,11 @@ import io.bkbn.kompendium.core.routes.redoc
 import net.catenax.core.managedidentitywallets.models.*
 import net.catenax.core.managedidentitywallets.services.WalletService
 
-suspend fun retrieveBusinessPartnerInfo(datapoolUrl: String, bpn: String, token: String): String {
+suspend fun retrieveBusinessPartnerInfo(bpdmDatapoolUrl: String, bpn: String, token: String): String {
 
     var stringBody: String = ""
     HttpClient(Apache).use { client ->
-        val httpResponse: HttpResponse = client.get("$datapoolUrl/$bpn") {
+        val httpResponse: HttpResponse = client.get("$bpdmDatapoolUrl/$bpn") {
             headers {
                 append(HttpHeaders.Accept, ContentType.Application.Json.toString())
                 append(HttpHeaders.Authorization, "Bearer " + token)
@@ -57,7 +57,7 @@ data class BusinessPartnerInfo(val bpn: String)
 
 fun Application.configureRouting(walletService: WalletService) {
 
-    val datapoolUrl = environment.config.property("datapool.url").getString()
+    val bpdmDatapoolUrl = environment.config.property("bpdm.datapoolUrl").getString()
 
     routing {
 
@@ -205,7 +205,7 @@ fun Application.configureRouting(walletService: WalletService) {
                         val did = call.parameters["did"]
                         if (did != null) {
                             try {
-                                val stringBody = retrieveBusinessPartnerInfo("${datapoolUrl}", did, token)
+                                val stringBody = retrieveBusinessPartnerInfo("${bpdmDatapoolUrl}", did, token)
                                 Json { ignoreUnknownKeys = true }.decodeFromString<BusinessPartnerInfo>(
                                     BusinessPartnerInfo.serializer(),
                                     stringBody
@@ -224,7 +224,7 @@ fun Application.configureRouting(walletService: WalletService) {
                                 log.warn("SerializationException: " + e.message)
                                 throw BadRequestException(e.message)
                             } catch (e: IOException) {
-                                log.warn("IOException: $datapoolUrl " + e.message)
+                                log.warn("IOException: $bpdmDatapoolUrl " + e.message)
                                 throw BadRequestException(e.message)
                             }
                         } else {
