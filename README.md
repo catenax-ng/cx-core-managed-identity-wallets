@@ -29,6 +29,8 @@ build system.
     4. [Initial Wallet Setup](#initialWalletSetup)
 10. [Testing GitHub actions locally](#testingGitHubActionsLocally)
 11. [Setting up progresql database](#settingUpPostgresSqlDatabase)
+12. [Generate DID from Seed](#generate-did-and-get-its-verkey-a-id"generatedidfromseed"a)
+13. [Tests](#tests)
 12. [Dashboard](#dashboard)
 13. [Future](#future)
 14. [Further Notes](#furtherNotes)
@@ -360,16 +362,22 @@ The Available Scopes/Roles are:
     * to trigger Business Partner Data update for its own BPN
 
 ## Generate DID and get its VerKey <a id="generateDIDFromSEED"></a>
-The [Indy CLI](https://hyperledger-indy.readthedocs.io/projects/sdk/en/latest/docs/design/001-cli/README.html) in Docker using the [docker-file](https://github.com/hyperledger/indy-sdk/blob/main/cli/cli.dockerfile) can be use to generate a new DID from a given Seed. However, it does not show the complete VerKey, check this [Issue](https://github.com/hyperledger/indy-sdk/issues/2553). Therefore, the easiest way to generate an DID is currently to start AcaPy with a given seed.
-
+The [Indy CLI](https://hyperledger-indy.readthedocs.io/projects/sdk/en/latest/docs/design/001-cli/README.html) in Docker using the [docker-file](https://github.com/hyperledger/indy-sdk/blob/main/cli/cli.dockerfile) can be use to generate a new DID from a given seed. However, it does not show the complete VerKey, check this [Issue](https://github.com/hyperledger/indy-sdk/issues/2553). Therefore, the easiest way to generate an DID is currently to start AcaPy with a given seed.
   * Navigate to `./dev-assets/generate-did-from-seed`
-  * Set the seed as an enviroment variable e.g. `export SEED=312931k4h15989pqwpou129412i214dk`. The Wallet SEED must be 32 characters or base64
-  * Start the AcaPy container with `docker-compose up`
-  * The DID and VerKey can be found in the logs. Search for *`get_my_did_with_meta: <<< res`*
+  * Generate a random seed that has 32 characters. If the use of an offline secure secret/password generators is not possible, then these guidelines must be followed:
+    * No repeat of characters or strings
+    * No patterns or use of dictionary words
+    * The use of uppercase and lowercase letters - as well as numbers and allowed symbols
+    * No personal preferences like names or phone numbers
+  * Set the seed as an enviroment variable e.g. `export SEED=312931k4h15989pqwpou129412i214dk`
+  * Change the permission of the script to executable with `chmod +x generateDidFromSeed.sh`
+  * Run the script generateDidFromSeed script with `./generateDidFromSeed.sh` which starts the AcaPy container for 3 minutes and then stops and removes it
+  * The DID and VerKey can be found in the logs of the running container. To access the logs open a new terminal and run `docker logs acapy_container -f`
+  * Search for *`get_my_did_with_meta: <<< res`*
     ```
     acapy_container    | 2022-08-12 08:08:13,888 indy.did DEBUG get_my_did_with_meta: <<< res: '{"did":"Hw2eFhr3KcZw5JcRW45KNc","verkey":"AEErMofs7DcJT636pocN2RiEHgTLoF4Mpj6heFXwtb3q","tempVerkey":null,"metadata":null}'
     ```
-  * Stop the container and delete it with `docker-compose down -v`
+  * If the script did not stop the containers, the command `docker-compose down -v` can stop and delete it
 
 ## Tests
 
