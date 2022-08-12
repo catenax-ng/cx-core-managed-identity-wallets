@@ -199,6 +199,7 @@ Starting up Docker Containers for Postgres, Keycloak and AcaPy via following ste
 
 * navigate to `./dev-assets/dev-containers`
 * run `docker-compose up -d` (or `docker compose up -d`, depdending on the installation) to start a Postgresql database and Keycloak instance and the AcaPy Service as Docker containers
+* If the used Indy Ledger `--genesis-url https://indy-test.idu.network/genesis \` is not public (write-restricted) then you need to register the DID and its VerKey manually. To generate a new DID with a given SEED please see the section - [Generate DID from Seed](#generateDIDFromSEED)
 * To setup the Postgresql database in the application please see the section below - [Setting up progresql database](#settingUpPostgresSqlDatabase), for the database
 * The keycloak configuration are imported from `./dev-assets/dev-containers/keycloak` in the docker compose file.
 * Keycloak is reachable at `http://localhost:8081/` with `username: admin` and `password: catena`,
@@ -229,7 +230,7 @@ kubectl create namespace managed-identity-wallets
 
 Altogether four secrets are needed
 * catenax-managed-identity-wallets-secrets
-* catenax-managed-identity-wallets-acapy-secrets
+* catenax-managed-identity-wallets-acapy-secrets. If the Indy Ledger is restricted then the DID of the used Seed must be registiered manually before starting AcaPy.
 * postgres-acapy-secret-config
 * postgres-managed-identity-wallets-secret-config
 
@@ -357,6 +358,18 @@ The Available Scopes/Roles are:
     * to issue Verifiable Presentations (The BPN of holder will be checked)
     * to store Verifiable Credentials (The BPN of holder will be checked)
     * to trigger Business Partner Data update for its own BPN
+
+## Generate DID and get its VerKey <a id="generateDIDFromSEED"></a>
+The [Indy CLI](https://hyperledger-indy.readthedocs.io/projects/sdk/en/latest/docs/design/001-cli/README.html) in Docker using the [docker-file](https://github.com/hyperledger/indy-sdk/blob/main/cli/cli.dockerfile) can be use to generate a new DID from a given Seed. However, it does not show the complete VerKey, check this [Issue](https://github.com/hyperledger/indy-sdk/issues/2553). Therefore, the easiest way to generate an DID is currently to start AcaPy with a given seed.
+
+  * Navigate to `./dev-assets/generate-did-from-seed`
+  * Set the seed as an enviroment variable e.g. `export SEED=312931k4h15989pqwpou129412i214dk`. The Wallet SEED must be 32 characters or base64
+  * Start the AcaPy container with `docker-compose up`
+  * The DID and VerKey can be found in the logs. Search for *`get_my_did_with_meta: <<< res`*
+    ```
+    acapy_container    | 2022-08-12 08:08:13,888 indy.did DEBUG get_my_did_with_meta: <<< res: '{"did":"Hw2eFhr3KcZw5JcRW45KNc","verkey":"AEErMofs7DcJT636pocN2RiEHgTLoF4Mpj6heFXwtb3q","tempVerkey":null,"metadata":null}'
+    ```
+  * Stop the container and delete it with `docker-compose down -v`
 
 ## Tests
 
