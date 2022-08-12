@@ -199,7 +199,7 @@ Starting up Docker Containers for Postgres, Keycloak and AcaPy via following ste
 
 * navigate to `./dev-assets/dev-containers`
 * run `docker-compose up -d` (or `docker compose up -d`, depdending on the installation) to start a Postgresql database and Keycloak instance and the AcaPy Service as Docker containers
-* If the used Indy Ledger `--genesis-url https://indy-test.idu.network/genesis \` is not public (write-restricted) then you need to register the DID and its VerKey manually. To generate a new DID with a given SEED please see the section - [Generate DID from Seed](#generateDIDFromSEED)
+* If the used Indy Ledger `--genesis-url https://indy-test.idu.network/genesis \` is Write-Restricted to endorser then the DID and its VerKey must be registiered manually before starting AcaPy. To generate a new DID with a given SEED please see the section - [Generate DID from Seed](#generateDIDFromSEED)
 * To setup the Postgresql database in the application please see the section below - [Setting up progresql database](#settingUpPostgresSqlDatabase), for the database
 * The keycloak configuration are imported from `./dev-assets/dev-containers/keycloak` in the docker compose file.
 * Keycloak is reachable at `http://localhost:8081/` with `username: admin` and `password: catena`,
@@ -230,7 +230,7 @@ kubectl create namespace managed-identity-wallets
 
 Altogether four secrets are needed
 * catenax-managed-identity-wallets-secrets
-* catenax-managed-identity-wallets-acapy-secrets. If the Indy Ledger is restricted then the DID of the used Seed must be registiered manually before starting AcaPy.
+* catenax-managed-identity-wallets-acapy-secrets. If the Indy Ledger is Write-Restricted to endorser then the DID of the used Seed must be registiered manually before starting AcaPy.
 * postgres-acapy-secret-config
 * postgres-managed-identity-wallets-secret-config
 
