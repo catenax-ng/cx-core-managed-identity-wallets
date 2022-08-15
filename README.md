@@ -370,14 +370,11 @@ The [Indy CLI](https://hyperledger-indy.readthedocs.io/projects/sdk/en/latest/do
     * The use of uppercase and lowercase letters - as well as numbers and allowed symbols
     * No personal preferences like names or phone numbers
   * Set the seed as an enviroment variable e.g. `export SEED=312931k4h15989pqwpou129412i214dk`
-  * Run the script generateDidFromSeed script with `./generateDidFromSeed.sh` which starts the AcaPy container and shows its logs in the console
-  * The DID and VerKey can be found in the logs of the running container
-  * Search for *`get_my_did_with_meta: <<< res`* to get the DID and VerKey
+  * Run the script generateDidFromSeed script with `./generateDidFromSeed.sh` which starts the AcaPy container and shows the printout of the DID and VerKey from its logs in the console like the following
     ```
-    acapy_container    | 2022-08-12 08:08:13,888 indy.did DEBUG get_my_did_with_meta: <<< res: '{"did":"Hw2eFhr3KcZw5JcRW45KNc","verkey":"AEErMofs7DcJT636pocN2RiEHgTLoF4Mpj6heFXwtb3q","tempVerkey":null,"metadata":null}'
+    2022-08-12 08:08:13,888 indy.did DEBUG get_my_did_with_meta: <<< res: '{"did":"Hw2eFhr3KcZw5JcRW45KNc","verkey":"AEErMofs7DcJT636pocN2RiEHgTLoF4Mpj6heFXwtb3q","tempVerkey":null,"metadata":null}'
     ```
-  * To stop and remove the container click on `Control + C`
-  * If the script did not stop the containers, the command `docker-compose down -v` can stop and delete it
+  * If the script did not stop the container, the command `docker-compose down -v` can stop and delete it manually
 
 ## Tests
 
