@@ -190,7 +190,7 @@ class BusinessPartnerDataServiceImpl(private val walletService: IWalletService,
                 JsonLdTypes.LEGAL_FORM_TYPE -> prepareLegalFormCredential(bpn, data as LegalFormDto)
                 else -> throw NotImplementedException("Credential of type $type is not implemented!")
             }
-            val verifiableCredential: VerifiableCredentialDto = walletService.issueCatenaXCredential(vcToIssue)
+            val verifiableCredential: VerifiableCredentialDto = walletService.issueCatenaXCredential(vcToIssue, true)
             val issuedVC = toIssuedVerifiableCredentialRequestDto(verifiableCredential)
             if (issuedVC != null) {
                 walletService.storeCredential(bpn, issuedVC)
@@ -459,6 +459,7 @@ class BusinessPartnerDataServiceImpl(private val walletService: IWalletService,
                 issuanceDate = vcDto.issuanceDate,
                 expirationDate = vcDto.expirationDate,
                 credentialSubject = vcDto.credentialSubject,
+                credentialStatus = vcDto.credentialStatus,
                 proof = vcDto.proof
             )
         }

@@ -40,13 +40,14 @@ import org.eclipse.tractusx.managedidentitywallets.models.*
 import org.eclipse.tractusx.managedidentitywallets.models.ssi.*
 import org.eclipse.tractusx.managedidentitywallets.models.ssi.JsonLdContexts
 import org.eclipse.tractusx.managedidentitywallets.services.IBusinessPartnerDataService
+import org.eclipse.tractusx.managedidentitywallets.services.IRevocationService
 import org.eclipse.tractusx.managedidentitywallets.services.IWalletService
 
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 
 import java.time.LocalDateTime
 
-fun Route.walletRoutes(walletService: IWalletService, businessPartnerDataService: IBusinessPartnerDataService) {
+fun Route.walletRoutes(walletService: IWalletService,businessPartnerDataService: IBusinessPartnerDataService) {
 
     route("/wallets") {
 
@@ -329,7 +330,7 @@ val issuedVerifiableCredentialRequestDtoExample = mapOf(
             type = "Ed25519Signature2018",
             created = "2021-11-17T22:20:27Z",
             proofPurpose = "assertionMethod",
-            verificationMethod = "did:example:76e12ec712ebc6f1c221ebfeb1f#keys-1",
+            verificationMethod = "did:example:76e12ec712ebc6f1c221ebfeb1f#key-1",
             jws = "eyJiNjQiOmZhbHNlLCJjcml0IjpbImI2NCJdLCJhbGciOiJFZERTQSJ9..JNerzfrK46Mq4XxYZEnY9xOK80xsEaWCLAHuZsFie1-NTJD17wWWENn_DAlA_OwxGF5dhxUJ05P6Dm8lcmF5Cg"
         )
     )

@@ -62,7 +62,14 @@ data class WithDateValidation(
         description = "Flag whether issuance and expiration date of all credentials should be validated",
         name = "withDateValidation"
     )
-    val withDateValidation: Boolean? = false
+    val withDateValidation: Boolean? = false,
+    @Param(type = ParamType.QUERY)
+    @Field(
+        description = "Optional Flag whether to check if the Verifiable Credentials has been revoked. " +
+                "Default is true. If the Credential is not revocable then it will be ignored!",
+        name = "withRevocationValidation"
+    )
+    val withRevocationValidation: Boolean = true
 )
 
 @Serializable
@@ -79,5 +86,12 @@ data class VerifiablePresentationIssuanceParameter(
                 "Default is true. If `withCredentialsValidation` is false then this value will be ignored.",
         name = "withCredentialsDateValidation"
     )
-    val withCredentialsDateValidation: Boolean = true
+    val withCredentialsDateValidation: Boolean = true,
+    @Param(type = ParamType.QUERY)
+    @Field(
+        description = "Optional Flag whether to check if the Verifiable Credentials has been revoked. " +
+                "Default is true. If the Credential is not revocable then it will be ignored!",
+        name = "withRevocationValidation"
+    )
+    val withRevocationValidation: Boolean = true
 )

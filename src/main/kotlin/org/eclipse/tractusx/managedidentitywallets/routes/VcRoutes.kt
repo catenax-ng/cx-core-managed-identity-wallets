@@ -34,16 +34,15 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import org.eclipse.tractusx.managedidentitywallets.Services
-import org.eclipse.tractusx.managedidentitywallets.models.forbiddenException
+import org.eclipse.tractusx.managedidentitywallets.models.*
+import org.eclipse.tractusx.managedidentitywallets.models.BadRequestException
 
-import org.eclipse.tractusx.managedidentitywallets.models.semanticallyInvalidInputException
 import org.eclipse.tractusx.managedidentitywallets.models.ssi.*
 import org.eclipse.tractusx.managedidentitywallets.models.ssi.JsonLdContexts
-import org.eclipse.tractusx.managedidentitywallets.models.syntacticallyInvalidInputException
-import org.eclipse.tractusx.managedidentitywallets.models.unauthorizedException
+import org.eclipse.tractusx.managedidentitywallets.services.IRevocationService
 import org.eclipse.tractusx.managedidentitywallets.services.IWalletService
 
-fun Route.vcRoutes(walletService: IWalletService) {
+fun Route.vcRoutes(walletService: IWalletService, revocationService: IRevocationService) {
 
     route("/credentials") {
 
@@ -87,13 +86,16 @@ fun Route.vcRoutes(walletService: IWalletService) {
 
         notarizedAuthenticate(AuthorizationHandler.JWT_AUTH_TOKEN) {
             notarizedPost(
-                PostInfo<Unit, VerifiableCredentialRequestDto, VerifiableCredentialDto>(
+                PostInfo<IsRevocable, VerifiableCredentialRequestDto, VerifiableCredentialDto>(
                     summary = "Issue Verifiable Credential",
                     description = "Permission: " +
                         "**${AuthorizationHandler.getPermissionOfRole(AuthorizationHandler.ROLE_UPDATE_WALLETS)}** OR " +
                         "**${AuthorizationHandler.getPermissionOfRole(AuthorizationHandler.ROLE_UPDATE_WALLET)}** " +
                             "(The BPN of the issuer of the Verifiable Credential must equal BPN of caller)\n" +
                         "\nIssue a verifiable credential with a given issuer DID",
+                    parameterExamples = setOf(
+                        ParameterExample("isRevocable", "isRevocable", false)
+                    ),
                     requestInfo = RequestInfo(
                         description = "The verifiable credential input data",
                         examples = verifiableCredentialRequestDtoExample
@@ -108,24 +110,30 @@ fun Route.vcRoutes(walletService: IWalletService) {
                     tags = setOf("VerifiableCredentials")
                 )
             ) {
+                val isRevocable = if (call.request.queryParameters["isRevocable"] != null) {
+                    call.request.queryParameters["isRevocable"].toBoolean()
+                } else { true }
                 val verifiableCredentialDto = call.receive<VerifiableCredentialRequestDto>()
 
                 AuthorizationHandler.checkHasRightsToUpdateWallet(call, verifiableCredentialDto.issuerIdentifier)
 
-                call.respond(HttpStatusCode.Created, walletService.issueCredential(verifiableCredentialDto))
+                call.respond(HttpStatusCode.Created, walletService.issueCredential(verifiableCredentialDto, isRevocable))
             }
         }
 
         route("/issuer") {
             notarizedAuthenticate(AuthorizationHandler.JWT_AUTH_TOKEN) {
                 notarizedPost(
-                    PostInfo<Unit, VerifiableCredentialRequestWithoutIssuerDto, VerifiableCredentialDto>(
+                    PostInfo<IsRevocable, VerifiableCredentialRequestWithoutIssuerDto, VerifiableCredentialDto>(
                         summary = "Issue a Verifiable Credential with Catena-X platform issuer",
                         description = "Permission: " +
                             "**${AuthorizationHandler.getPermissionOfRole(AuthorizationHandler.ROLE_UPDATE_WALLETS)}** OR " +
                             "**${AuthorizationHandler.getPermissionOfRole(AuthorizationHandler.ROLE_UPDATE_WALLET)}** " +
                                 "(The BPN of Catena-X wallet must equal BPN of caller)\n" +
                             "\nIssue a verifiable credential by Catena-X wallet",
+                        parameterExamples = setOf(
+                            ParameterExample("isRevocable", "isRevocable", false)
+                        ),
                         requestInfo = RequestInfo(
                             description = "The verifiable credential input",
                             examples = verifiableCredentialRequestWithoutIssuerDtoExample
@@ -140,16 +148,101 @@ fun Route.vcRoutes(walletService: IWalletService) {
                         tags = setOf("VerifiableCredentials")
                     )
                 ) {
+                    val isRevocable = if (call.request.queryParameters["isRevocable"] != null) {
+                        call.request.queryParameters["isRevocable"].toBoolean()
+                    } else { true }
+
                     val verifiableCredentialRequestDto = call.receive<VerifiableCredentialRequestWithoutIssuerDto>()
 
                     AuthorizationHandler.checkHasRightsToUpdateWallet(call, Services.walletService.getCatenaXBpn())
 
-                    val verifiableCredentialDto = walletService.issueCatenaXCredential(verifiableCredentialRequestDto)
+                    val verifiableCredentialDto = walletService.issueCatenaXCredential(verifiableCredentialRequestDto, isRevocable)
                     call.respond(HttpStatusCode.Created, verifiableCredentialDto)
                 }
             }
         }
+
+        route("/revocations") {
+            notarizedAuthenticate(AuthorizationHandler.JWT_AUTH_TOKEN) {
+                notarizedPost(
+                    PostInfo<Unit, VerifiableCredentialDto, String>(
+                        summary = "Revoke issued Verifiable Credential",
+                        description = "Permission: " +
+                                "**${AuthorizationHandler.getPermissionOfRole(AuthorizationHandler.ROLE_UPDATE_WALLETS)}** OR " +
+                                "**${AuthorizationHandler.getPermissionOfRole(AuthorizationHandler.ROLE_UPDATE_WALLET)}** " +
+                                "(The BPN of the issuer of the Verifiable Credential must equal BPN of caller)\n" +
+                                "\nRevoke issued Verifiable Credential by issuer",
+                        requestInfo = RequestInfo(
+                            description = "The verifiable credential input data",
+                            examples = signedVerifiableCredentialDtoExample
+                        ),
+                        responseInfo = ResponseInfo(
+                            status = HttpStatusCode.Accepted,
+                            description = "Empty response body"
+                        ),
+                        canThrow = setOf(semanticallyInvalidInputException, syntacticallyInvalidInputException,
+                            forbiddenException, unauthorizedException),
+                        tags = setOf("VerifiableCredentials")
+                    )
+                ) {
+                    val verifiableCredentialDto = call.receive<VerifiableCredentialDto>()
+                    AuthorizationHandler.checkHasRightsToUpdateWallet(call, verifiableCredentialDto.issuer)
+                    walletService.revokeVerifiableCredential(verifiableCredentialDto)
+                    call.respond(HttpStatusCode.Accepted)
+                }
+            }
+
+            route("/statusListCredentialRefresh") {
+                notarizedAuthenticate(AuthorizationHandler.JWT_AUTH_TOKEN) {
+                    notarizedPost(
+                        PostInfo<Unit, Unit, String>(
+                            summary = "Re-issue the Status-List Credential for all Wallets",
+                            description = "Permission: " +
+                                    "**${AuthorizationHandler.getPermissionOfRole(AuthorizationHandler.ROLE_UPDATE_WALLETS)}** OR " +
+                                    "**${AuthorizationHandler.getPermissionOfRole(AuthorizationHandler.ROLE_UPDATE_WALLET)}** " +
+                                    "(The BPN of the issuer of the Verifiable Credential must equal BPN of caller)\n" +
+                                    "\nRe-issue the Status-List Credential for all registered wallet",
+                            requestInfo = null,
+                            responseInfo = ResponseInfo(
+                                status = HttpStatusCode.Accepted,
+                                description = "Empty response body",
+                            ),
+                            canThrow = setOf(semanticallyInvalidInputException, syntacticallyInvalidInputException,
+                                forbiddenException, unauthorizedException),
+                            tags = setOf("VerifiableCredentials")
+                        )
+                    ) {
+                        AuthorizationHandler.checkHasRightsToUpdateWallet(call)
+                        revocationService.issueStatusListCredentials()
+                        call.respond(HttpStatusCode.Accepted)
+                    }
+                }
+            }
+        }
+
+        // Public endpoint to get Status-List Credential
+        route("/status/{listName}") {
+            notarizedGet(
+                GetInfo<ListNameParameter, VerifiableCredentialDto>(
+                    summary = "Query Status-List Credentials",
+                    description =  "Get the Status-List Credential for a given listName",
+                    parameterExamples = setOf(
+                        ParameterExample("listName", "listName", "5cb9ce19-9a10-48fe-bfa6-384632b89dc3"),
+                    ),
+                    responseInfo = ResponseInfo(
+                        status = HttpStatusCode.OK,
+                        description = "The Verifiable Credential",
+                        examples = statusListCredentialExample
+                    ),
+                    tags = setOf("VerifiableCredentials"),
+                )
+            ) {
+                val listName = call.parameters["listName"] ?: throw BadRequestException("ListName is required!")
+                call.respond(HttpStatusCode.OK, revocationService.getOwnStatusListCredential(listName))
+            }
+        }
     }
+
 }
 
 val verifiableCredentialRequestDtoExample = mapOf(
@@ -195,12 +288,54 @@ val signedVerifiableCredentialDtoExample =  mapOf(
         issuanceDate = "2019-06-16T18:56:59Z",
         expirationDate = "2019-06-17T18:56:59Z",
         credentialSubject = mapOf("college" to "Test-University"),
+        credentialStatus = CredentialStatus(
+            statusId = "https://example.com/credentials/status/3#94567",
+            credentialType = "StatusList2021Entry",
+            statusPurpose = "revocation",
+            index = "94567",
+            listUrl = "https://example.com/credentials/status/3"
+        ),
         proof = LdProofDto(
             type = "Ed25519Signature2018",
             created = "2021-11-17T22:20:27Z",
             proofPurpose = "assertionMethod",
-            verificationMethod = "did:example:76e12ec712ebc6f1c221ebfeb1f#keys-1",
+            verificationMethod = "did:example:76e12ec712ebc6f1c221ebfeb1f#key-1",
             jws = "eyJiNjQiOmZhbHNlLCJjcml0IjpbImI2NCJdLCJhbGciOiJFZERTQSJ9..JNerzfrK46Mq4XxYZEnY9xOK80xsEaWCLAHuZsFie1-NTJD17wWWENn_DAlA_OwxGF5dhxUJ05P6Dm8lcmF5Cg"
+        )
+    )
+)
+
+val listCredentialRequestData = mapOf(
+    "demo" to ListCredentialRequestData(
+        listId = "uuid-of-list",
+        subject = ListCredentialSubject (
+            credentialId = "https://example.com/status/3#list",
+            credentialType = "StatusList2021",
+            statusPurpose = "revocation",
+            encodedList = "H4sIAAAAAAAAA-3BMQEAAADCoPVPbQwfoAAAAAAAAAAAAAAAAAAAAIC3AYbSVKsAQAAA"
+        )
+    )
+)
+
+val statusListCredentialExample = mapOf(
+    "demo" to VerifiableCredentialDto(
+        id = "http://localhost:8080/api/credentials/status/5c145c85-8fcb-42d4-893c-d19a55581e00",
+        context = listOf("https://www.w3.org/2018/credentials/v1", "https://w3id.org/vc/status-list/2021/v1"),
+        type = listOf(    "VerifiableCredential", "StatusList2021Credential"),
+        issuer =  "did:indy:local:test:Ae49DuXZy2PLBjSL9W2V2i",
+        issuanceDate = "2022-08-31T07:19:36Z",
+        credentialSubject = mapOf(
+            "id" to "http://localhost:8080/api/credentials/status/5c145c85-8fcb-42d4-893c-d19a55581e00#list",
+            "type" to "StatusList2021",
+            "statusPurpose" to "revocation",
+            "encodedList" to "H4sIAAAAAAAAAO3BIQEAAAACIAf4f68zLEADAAAAAAAAAAAAAAAAAAAAvA3HJiyHAEAAAA=="
+        ),
+        proof = LdProofDto(
+            type =  "Ed25519Signature2018",
+            created = "2022-08-31T07:19:42Z",
+            proofPurpose = "assertionMethod",
+            verificationMethod = "did:indy:local:test:Ae49DuXZy2PLBjSL9W2V2i#key-1",
+            jws = "eyJhbGciOiAiRWREU0EiLCAiYjY0IjogZmFsc2UsICJjcml0IjogWyJiNjQiXX0..0FB66o-WAn8W4qnNK0NsHBFMJj_ZM42ADdbwYO-P8oGywaYWeBPZylgD35AV2-CR0b5Hs8uDq0EIn8iHycjmBQ"
         )
     )
 )

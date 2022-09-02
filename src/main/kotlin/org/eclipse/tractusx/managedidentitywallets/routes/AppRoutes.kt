@@ -19,12 +19,38 @@
 
 package org.eclipse.tractusx.managedidentitywallets.routes
 
+import io.bkbn.kompendium.core.Notarized.notarizedGet
+import io.bkbn.kompendium.core.Notarized.notarizedPost
+import io.bkbn.kompendium.core.metadata.ParameterExample
+import io.bkbn.kompendium.core.metadata.RequestInfo
+import io.bkbn.kompendium.core.metadata.ResponseInfo
+import io.bkbn.kompendium.core.metadata.method.GetInfo
+import io.bkbn.kompendium.core.metadata.method.PostInfo
 import io.ktor.application.*
+import io.ktor.features.*
+import io.ktor.http.*
+import io.ktor.request.*
+import io.ktor.response.*
 import io.ktor.routing.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import org.eclipse.tractusx.managedidentitywallets.models.*
+import org.eclipse.tractusx.managedidentitywallets.models.BadRequestException
+import org.eclipse.tractusx.managedidentitywallets.models.ssi.JsonLdContexts
+import org.eclipse.tractusx.managedidentitywallets.models.ssi.ListCredentialRequestData
+import org.eclipse.tractusx.managedidentitywallets.models.ssi.VerifiableCredentialRequestDto
 import org.eclipse.tractusx.managedidentitywallets.services.IBusinessPartnerDataService
+import org.eclipse.tractusx.managedidentitywallets.services.IRevocationService
 import org.eclipse.tractusx.managedidentitywallets.services.IWalletService
+import java.io.ByteArrayInputStream
+import java.util.*
+import java.util.zip.GZIPInputStream
 
-fun Application.appRoutes(walletService: IWalletService, businessPartnerDataService: IBusinessPartnerDataService) {
+fun Application.appRoutes(
+    walletService: IWalletService,
+    businessPartnerDataService: IBusinessPartnerDataService,
+    revocationService: IRevocationService
+) {
 
     routing {
         route("/api") {
@@ -32,9 +58,42 @@ fun Application.appRoutes(walletService: IWalletService, businessPartnerDataServ
             walletRoutes(walletService, businessPartnerDataService)
             businessPartnerDataRoutes(businessPartnerDataService)
             didDocRoutes(walletService)
-            vcRoutes(walletService)
+            vcRoutes(walletService, revocationService)
             vpRoutes(walletService)
 
         }
+
+        // Used by the revocation service to issue Status-List Credential
+        route("/list-credential/{profileName}/issue") {
+            notarizedPost(
+                PostInfo<Unit, ListCredentialRequestData, String>(
+                    summary = "Issue a List Status credential",
+                    description = "This endpoint is called by the revocation service to issue a list status credential for a given profileName",
+                    parameterExamples = setOf(
+                        ParameterExample("profileName", "profileName", "did:example:0123"),
+                    ),
+                    requestInfo = RequestInfo(
+                        description = "The subject of the status list credential",
+                        examples = listCredentialRequestData
+                    ),
+                    responseInfo = ResponseInfo(
+                        status = HttpStatusCode.Created,
+                        description = "The created verifiable credential",
+                        examples = mapOf("demo" to "credential-as-string")
+                    ),
+                    canThrow = setOf(
+                        semanticallyInvalidInputException, syntacticallyInvalidInputException,
+                        forbiddenException, unauthorizedException
+                    ),
+                    tags = setOf("VerifiableCredentials")
+                )
+            ) {
+                val profileName =  call.parameters["profileName"] ?: throw BadRequestException("Missing or malformed identifier")
+                var listCredentialRequestData = call.receive<ListCredentialRequestData>()
+                val verifiableCredentialDto = walletService.issueStatusListCredential(profileName, listCredentialRequestData)
+                call.respond(HttpStatusCode.Created, Json.encodeToString(verifiableCredentialDto))
+            }
+        }
+
     }
 }

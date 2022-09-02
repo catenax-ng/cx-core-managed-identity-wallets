@@ -54,9 +54,15 @@ interface IWalletService {
 
     fun storeCredential(identifier: String, issuedCredential: IssuedVerifiableCredentialRequestDto): Boolean
 
-    suspend fun issueCredential(vcRequest: VerifiableCredentialRequestDto): VerifiableCredentialDto
+    suspend fun issueCredential(
+        vcRequest: VerifiableCredentialRequestDto,
+        isRevocable: Boolean
+    ): VerifiableCredentialDto
 
-    suspend fun issueCatenaXCredential(vcCatenaXRequest: VerifiableCredentialRequestWithoutIssuerDto): VerifiableCredentialDto
+    suspend fun issueCatenaXCredential(
+        vcCatenaXRequest: VerifiableCredentialRequestWithoutIssuerDto,
+        isRevocable: Boolean
+    ): VerifiableCredentialDto
 
     suspend fun resolveDocument(identifier: String): DidDocumentDto
 
@@ -65,7 +71,8 @@ interface IWalletService {
     suspend fun issuePresentation(
         vpRequest: VerifiablePresentationRequestDto,
         withCredentialsValidation: Boolean,
-        withCredentialsDateValidation: Boolean
+        withCredentialsDateValidation: Boolean,
+        withRevocationValidation: Boolean
     ): VerifiablePresentationDto
 
     fun getCredentials(
@@ -89,15 +96,26 @@ interface IWalletService {
 
     fun getCatenaXBpn(): String
 
-    suspend fun verifyVerifiablePresentation(vpDto: VerifiablePresentationDto,
-                                             withDateValidation: Boolean = false): VerifyResponse
+    suspend fun verifyVerifiablePresentation(
+        vpDto: VerifiablePresentationDto,
+        withDateValidation: Boolean = false,
+        withRevocationValidation: Boolean
+    ): VerifyResponse
+
+    suspend fun issueStatusListCredential(
+        profileName: String,
+        listCredentialRequestData: ListCredentialRequestData
+    ): VerifiableCredentialDto
+
+    suspend fun revokeVerifiableCredential(vc: VerifiableCredentialDto)
 
     companion object {
         fun createWithAcaPyService(
             walletAndAcaPyConfig: WalletAndAcaPyConfig,
             walletRepository: WalletRepository,
             credentialRepository: CredentialRepository,
-            utilsService: UtilsService
+            utilsService: UtilsService,
+            revocationService: IRevocationService
         ): IWalletService {
             val acaPyService = IAcaPyService.create(
                 walletAndAcaPyConfig = walletAndAcaPyConfig,
@@ -150,7 +168,8 @@ interface IWalletService {
                     }
                 }
             )
-            return AcaPyWalletServiceImpl(acaPyService, walletRepository, credentialRepository, utilsService)
+            return AcaPyWalletServiceImpl(acaPyService, walletRepository, credentialRepository,
+                utilsService, revocationService)
         }
     }
 }

@@ -86,7 +86,8 @@ build system.
        1. ![Public DID registration](docs/images/PublicDIDRegister.png "Public DID registration")
     2. Register your DID with Managed Identity Wallets with a POST to `/api/wallets/<CX Base Wallet BPN>/public` and as body the ver key
        `{ "verKey": "verification key from creation" }`
-9. Now you have created your own Wallet and published your DID to the Ledger, you can retrieve the list of wallets in Postman via the *Get wallets from Managed Identity Wallets*
+9. Issue Status-List Credential by sending a POST request to `/api/credentials/revocations/statusListCredentialRefresh`. This step is required because the Credential can only be issued after the DID is registiered on Ledger and set to Public
+10. Now you have created your own Wallet and published your DID to the Ledger, you can retrieve the list of wallets in Postman via the *Get wallets from Managed Identity Wallets*
 
 ## Building with gradle <a id= "buildingWithGradle"></a>
 
@@ -173,6 +174,8 @@ below. Here a few hints on how to set it up:
 15. `BPDM_AUTH_SCOPE`: specify the expected scope e.g. `openid`
 15. `BPDM_AUTH_URL`: specify the url to get the access token of `BPDM` e.g. `https://centralidp.demo.catena-x.net/auth/realms/CX-Central/protocol/openid-connect/token`
 15. `BPDM_PULL_DATA_AT_HOUR`: specify at which hour (24-hour clock) the cron job should pull the data from the `BPDM` e.g. `23`
+15. `REVOCATION_URL`: specify the url of the revocation service e.g. `http://localhost:8086`
+15. `REVOCATION_CREATE_STATUS_LIST_CREDENTIAL_AT_HOUR`: specify at which hour (24-hour clock) the cron job should issue/update status-list credentials
 
 ## Local development environment <a id= "localDevelopmentEnvironment"></a>
 
@@ -213,9 +216,11 @@ docker build -t catena-x/managed-identity-wallets:<placeholder> .
 Starting up Docker Containers for Postgres, Keycloak and AcaPy via following steps:
 
 * navigate to `./dev-assets/dev-containers`
-* run `docker-compose up -d` (or `docker compose up -d`, depdending on the installation) to start a Postgresql database and Keycloak instance and the AcaPy Service as Docker containers
+* run `docker-compose up -d` (or `docker compose up -d`, depdending on the installation) to start a Postgresql database and Keycloak instance and the AcaPy Service and the revocation Service as Docker containers
 * If the used Indy ledger `--genesis-url https://indy-test.idu.network/genesis \` is write-restricted to endorsers or higher roles, the DID and its VerKey must be registered manually before starting AcaPy. To generate a new DID with a given seed see the section - [Generate DID from Seed](#generateDIDFromSEED)
 * To setup the Postgresql database in the application please see the section below - [Setting up progresql database](#settingUpPostgresSqlDatabase), for the database
+* The tables of the `Revocation Service` should be added manually to the `miwdev` database using the sql script `./dev-asset/dev-containers/revocation/V1.0.0__Create_DB.sql`
+* The used image of the `Revocation Service` need to be replaced by an official one after this [bug](https://gitlab.com/gaia-x/data-infrastructure-federation-services/not/notarization-service/-/issues/73#note_1084951096) is fixed.
 * The keycloak configuration are imported from `./dev-assets/dev-containers/keycloak` in the docker compose file.
 * Keycloak is reachable at `http://localhost:8081/` with `username: admin` and `password: catena`,
   the client id ist `ManagedIdentityWallets` and client secret can be found under the `Clients - ManagedIdentityWallets - Credentials`
