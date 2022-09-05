@@ -590,18 +590,9 @@ class AcaPyWalletServiceImpl(
         if (vc.credentialStatus == null) {
             return
         }
-        if (vc.credentialStatus.credentialType != "StatusList2021Entry") {
-            throw UnprocessableEntityException("Cannot verify revocation status of credential ${vc.id} due to wrong credentialType")
-        }
-        if (vc.credentialStatus.statusPurpose != "revocation") {
-            throw UnprocessableEntityException("Cannot verify revocation status of credential ${vc.id} due to wrong statusPurpose")
-        }
-        val indexOfCredential = vc.credentialStatus.index ?:
-            throw UnprocessableEntityException("Cannot verify revocation status of credential ${vc.id} due to missing status list index")
-        val listUrl = vc.credentialStatus.listUrl ?:
-            throw UnprocessableEntityException("Cannot verify revocation status of credential ${vc.id} due to missing status list url")
+        verifyPropertiesOfCredentialStatus(vc.id, vc.credentialStatus)
 
-        val statusListVerifiableCredential = revocationService.getStatusListCredentialOfUrl(listUrl)
+        val statusListVerifiableCredential = revocationService.getStatusListCredentialOfUrl(vc.credentialStatus.listUrl)
 
         if (statusListVerifiableCredential.issuer != vc.issuer) {
             throw UnprocessableEntityException("Cannot verify revocation: " +
@@ -633,7 +624,7 @@ class AcaPyWalletServiceImpl(
         )
 
         val bitSet = utilsService.decodeBitset(listCredentialSubjectAsMap["encodedList"] as String)
-        if (bitSet.get(Integer.valueOf(indexOfCredential))) {
+        if (bitSet.get(Integer.valueOf(vc.credentialStatus.index))) {
             throw UnprocessableEntityException("The credential ${vc.id} has been revoked!")
         }
     }
@@ -652,10 +643,10 @@ class AcaPyWalletServiceImpl(
             type = listOf("VerifiableCredential", "StatusList2021Credential"),
             issuerIdentifier = issuerDid,
             credentialSubject = mapOf(
-                "id" to listCredentialRequestData.subject!!.credentialId!!,
+                "id" to listCredentialRequestData.subject.credentialId,
                 "type" to "StatusList2021",
                 "statusPurpose" to "revocation",
-                "encodedList" to listCredentialRequestData.subject!!.encodedList!!
+                "encodedList" to listCredentialRequestData.subject.encodedList
             ),
             issuanceDate = JsonLDUtils.dateToString(Date.from(Instant.now()))
         )
@@ -689,12 +680,32 @@ class AcaPyWalletServiceImpl(
         if (vc.credentialStatus == null) {
             throw UnprocessableEntityException("The given verifiable credential is not revocable!")
         }
-        val index = vc.credentialStatus.index ?:
-            throw UnprocessableEntityException("The given verifiable credential has no Index in its CredentialStatus")
+        verifyPropertiesOfCredentialStatus(vc.id, vc.credentialStatus)
 
         validateVerifiableCredential(vc, withDateValidation = false, withRevocationCheck = false, walletOfIssuer.walletToken)
 
-        revocationService.revoke(utilsService.getIdentifierOfDid(walletOfIssuer.did), index.toLong())
+        revocationService.revoke(
+            profileName = utilsService.getIdentifierOfDid(walletOfIssuer.did),
+            indexOfCredential = vc.credentialStatus.index.toLong()
+        )
+    }
+
+    private fun verifyPropertiesOfCredentialStatus(
+        credentialId: String? = "",
+        credentialStatus: CredentialStatus
+    ) {
+        if (credentialStatus.credentialType != "StatusList2021Entry") {
+            throw UnprocessableEntityException("Credential with Id $credentialId has invalid credential status 'Type'")
+        }
+        if (credentialStatus.statusPurpose != "revocation") {
+            throw UnprocessableEntityException("Credential with Id $credentialId has invalid 'statusPurpose'")
+        }
+        if (credentialStatus.index.isBlank() || credentialStatus.index.toLong() < 0) {
+            throw UnprocessableEntityException("Credential with Id $credentialId has invalid 'statusListIndex'")
+        }
+        if (credentialStatus.listUrl.isBlank()) {
+            throw UnprocessableEntityException("Credential with Id $credentialId has invalid 'statusListCredential'")
+        }
     }
 
 }

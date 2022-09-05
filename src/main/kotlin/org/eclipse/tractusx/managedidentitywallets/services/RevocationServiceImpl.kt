@@ -63,9 +63,9 @@ class RevocationServiceImpl(
         return Json.decodeFromString(httpResponse.readText())
     }
 
-    override suspend fun revoke(profileName: String, idx: Long) {
+    override suspend fun revoke(profileName: String, indexOfCredential: Long) {
         client.delete<HttpResponse> {
-            url("$revocationUrl/management/lists/$profileName/entry/$idx")
+            url("$revocationUrl/management/lists/$profileName/entry/$indexOfCredential")
             accept(ContentType.Application.Json)
             contentType(ContentType.Application.Json)
         }

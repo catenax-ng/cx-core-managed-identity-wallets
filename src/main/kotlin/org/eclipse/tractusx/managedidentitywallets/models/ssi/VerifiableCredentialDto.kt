@@ -138,25 +138,25 @@ data class VerifiableCredentialRequestWithoutIssuerDto(
 
 @Serializable
 data class CredentialStatus (
-    @SerialName("id") @JsonProperty("id") var statusId: String? = null,
+    @SerialName("id") @JsonProperty("id") var statusId: String,
     @SerialName("type") @JsonProperty("type")  var credentialType: String = "StatusList2021Entry",
     @SerialName("statusPurpose") @JsonProperty("statusPurpose") var statusPurpose: String = "revocation",
-    @SerialName("statusListIndex") @JsonProperty("statusListIndex") var index: String? = null,
-    @SerialName("statusListCredential") @JsonProperty("statusListCredential") var listUrl: String? = null,
+    @SerialName("statusListIndex") @JsonProperty("statusListIndex") var index: String,
+    @SerialName("statusListCredential") @JsonProperty("statusListCredential") var listUrl: String,
 )
 
 @Serializable
 data class ListCredentialRequestData (
     @SerialName("id") @JsonProperty("id") var listId: String? = null,
-    var subject: ListCredentialSubject? = null
+    var subject: ListCredentialSubject
 )
 
 @Serializable
 data class ListCredentialSubject (
-    @SerialName("id") @JsonProperty("id") var credentialId: String? = null,
+    @SerialName("id") @JsonProperty("id") var credentialId: String,
     @SerialName("type") @JsonProperty("type") var credentialType: String = "StatusList2021",
     var statusPurpose: String = "revocation",
-    var encodedList: String? = null
+    var encodedList: String
 )
 
 @Serializable

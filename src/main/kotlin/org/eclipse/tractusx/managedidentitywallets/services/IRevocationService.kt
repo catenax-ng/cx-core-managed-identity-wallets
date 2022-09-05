@@ -39,7 +39,7 @@ interface IRevocationService {
 
     suspend fun getStatusListCredentialOfUrl(statusListUrl: String): VerifiableCredentialDto
 
-    suspend fun revoke(profileName: String, idx: Long)
+    suspend fun revoke(profileName: String, indexOfCredential: Long)
 
     suspend fun issueStatusListCredentials()
 

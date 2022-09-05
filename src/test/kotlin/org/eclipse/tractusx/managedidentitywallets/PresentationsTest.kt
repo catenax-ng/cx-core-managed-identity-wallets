@@ -1245,8 +1245,7 @@ class PresentationsTest {
                 setBody(verifiablePresentationWithWrongStatusType)
             }.apply {
                 assertEquals(HttpStatusCode.UnprocessableEntity, response.status())
-                assertTrue(response.content!!.contains("Cannot verify revocation status of credential " +
-                        "http://example.edu/credentials/3735 due to wrong credentialType"))
+                assertTrue(response.content!!.contains("has invalid credential status 'Type'"))
             }
 
             val verifiablePresentationWithWrongStatusPurpose = """
@@ -1316,11 +1315,10 @@ class PresentationsTest {
                 setBody(verifiablePresentationWithWrongStatusPurpose)
             }.apply {
                 assertEquals(HttpStatusCode.UnprocessableEntity, response.status())
-                assertTrue(response.content!!.contains("Cannot verify revocation status of credential " +
-                        "http://example.edu/credentials/3735 due to wrong statusPurpose"))
+                assertTrue(response.content!!.contains("has invalid 'statusPurpose'"))
             }
 
-            val verifiablePresentationWithMissingStatusListIndex = """
+            val verifiablePresentationWithEmptyStatusListIndex = """
                 {
                     "@context": [
                         "https://www.w3.org/2018/credentials/v1"
@@ -1359,6 +1357,7 @@ class PresentationsTest {
                                 "id": "http://localhost:8080/api/credentials/status/${SingletonTestData.revocationListName}#${SingletonTestData.credentialIndex}",
                                 "type": "StatusList2021Entry",
                                 "statusPurpose": "revocation",
+                                "statusListIndex": " ",
                                 "statusListCredential": "http://localhost:8080/api/credentials/status/${SingletonTestData.revocationListName}"
                             },
                             "proof": {
@@ -1383,14 +1382,13 @@ class PresentationsTest {
                 addHeader(HttpHeaders.Authorization, "Bearer ${EnvironmentTestSetup.VIEW_TOKEN}")
                 addHeader(HttpHeaders.Accept, ContentType.Application.Json.toString())
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                setBody(verifiablePresentationWithMissingStatusListIndex)
+                setBody(verifiablePresentationWithEmptyStatusListIndex)
             }.apply {
                 assertEquals(HttpStatusCode.UnprocessableEntity, response.status())
-                assertTrue(response.content!!.contains("Cannot verify revocation status of credential " +
-                        "http://example.edu/credentials/3735 due to missing status list index"))
+                assertTrue(response.content!!.contains("has invalid 'statusListIndex'"))
             }
 
-            val verifiablePresentationWithMissingStatusListUrl = """
+            val verifiablePresentationWithEmptyStatusListUrl = """
                 {
                     "@context": [
                         "https://www.w3.org/2018/credentials/v1"
@@ -1429,7 +1427,8 @@ class PresentationsTest {
                                 "id": "http://localhost:8080/api/credentials/status/${SingletonTestData.revocationListName}#${SingletonTestData.credentialIndex}",
                                 "type": "StatusList2021Entry",
                                 "statusPurpose": "revocation",
-                                "statusListIndex": "3"
+                                "statusListIndex": "3",
+                                "statusListCredential": "   "
                             },
                             "proof": {
                                 "type": "Ed25519Signature2018",
@@ -1453,11 +1452,10 @@ class PresentationsTest {
                 addHeader(HttpHeaders.Authorization, "Bearer ${EnvironmentTestSetup.VIEW_TOKEN}")
                 addHeader(HttpHeaders.Accept, ContentType.Application.Json.toString())
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                setBody(verifiablePresentationWithMissingStatusListUrl)
+                setBody(verifiablePresentationWithEmptyStatusListUrl)
             }.apply {
                 assertEquals(HttpStatusCode.UnprocessableEntity, response.status())
-                assertTrue(response.content!!.contains("Cannot verify revocation status of credential " +
-                        "http://example.edu/credentials/3735 due to missing status list url"))
+                assertTrue(response.content!!.contains("has invalid 'statusListCredential'"))
             }
 
             val verifiablePresentationWithIssuerConflict = """

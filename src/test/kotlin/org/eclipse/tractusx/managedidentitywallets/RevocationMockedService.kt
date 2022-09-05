@@ -65,7 +65,7 @@ class RevocationMockedService(private val networkIdentifier: String): IRevocatio
         )
     }
 
-    override suspend fun revoke(profileName: String, idx: Long) {}
+    override suspend fun revoke(profileName: String, indexOfCredential: Long) { }
 
     override suspend fun issueStatusListCredentials() { }
 
