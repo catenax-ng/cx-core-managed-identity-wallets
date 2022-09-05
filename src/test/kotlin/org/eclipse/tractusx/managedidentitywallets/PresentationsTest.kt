@@ -55,13 +55,13 @@ class PresentationsTest {
             configureOpenAPI()
             configureSecurity()
             configureRouting(EnvironmentTestSetup.walletService)
-            appRoutes(EnvironmentTestSetup.walletService, EnvironmentTestSetup.bpdService, EnvironmentTestSetup.revocationMockedService)
+            appRoutes(EnvironmentTestSetup.walletService, EnvironmentTestSetup.bpdService,  EnvironmentTestSetup.revocationMockedService, EnvironmentTestSetup.utilsService)
             configureSerialization()
             configureStatusPages()
             Services.walletService = EnvironmentTestSetup.walletService
             Services.businessPartnerDataService = EnvironmentTestSetup.bpdService
             Services.utilsService = EnvironmentTestSetup.utilsService
-            Services.revocationService = EnvironmentTestSetup.revocationMockedService
+            Services.revocationService =  EnvironmentTestSetup.revocationMockedService
         }) {
             // programmatically add a wallet
             val walletDto: WalletDto
@@ -326,13 +326,13 @@ class PresentationsTest {
             configureOpenAPI()
             configureSecurity()
             configureRouting(EnvironmentTestSetup.walletService)
-            appRoutes(EnvironmentTestSetup.walletService, EnvironmentTestSetup.bpdService, EnvironmentTestSetup.revocationMockedService)
+            appRoutes(EnvironmentTestSetup.walletService, EnvironmentTestSetup.bpdService,  EnvironmentTestSetup.revocationMockedService, EnvironmentTestSetup.utilsService)
             configureSerialization()
             configureStatusPages()
             Services.walletService = EnvironmentTestSetup.walletService
             Services.businessPartnerDataService = EnvironmentTestSetup.bpdService
             Services.utilsService = EnvironmentTestSetup.utilsService
-            Services.revocationService = EnvironmentTestSetup.revocationMockedService
+            Services.revocationService =  EnvironmentTestSetup.revocationMockedService
         }) {
             // programmatically add a wallet
             val walletDto: WalletDto
@@ -484,13 +484,13 @@ class PresentationsTest {
             configureOpenAPI()
             configureSecurity()
             configureRouting(EnvironmentTestSetup.walletService)
-            appRoutes(EnvironmentTestSetup.walletService, EnvironmentTestSetup.bpdService, EnvironmentTestSetup.revocationMockedService)
+            appRoutes(EnvironmentTestSetup.walletService, EnvironmentTestSetup.bpdService,  EnvironmentTestSetup.revocationMockedService, EnvironmentTestSetup.utilsService)
             configureSerialization()
             configureStatusPages()
             Services.walletService = EnvironmentTestSetup.walletService
             Services.businessPartnerDataService = EnvironmentTestSetup.bpdService
             Services.utilsService = EnvironmentTestSetup.utilsService
-            Services.revocationService = EnvironmentTestSetup.revocationMockedService
+            Services.revocationService =  EnvironmentTestSetup.revocationMockedService
         }) {
             // programmatically add base wallet and an additional one
             runBlocking {
@@ -1042,13 +1042,13 @@ class PresentationsTest {
             configureOpenAPI()
             configureSecurity()
             configureRouting(EnvironmentTestSetup.walletService)
-            appRoutes(EnvironmentTestSetup.walletService, EnvironmentTestSetup.bpdService, EnvironmentTestSetup.revocationMockedService)
+            appRoutes(EnvironmentTestSetup.walletService, EnvironmentTestSetup.bpdService,  EnvironmentTestSetup.revocationMockedService, EnvironmentTestSetup.utilsService)
             configureSerialization()
             configureStatusPages()
             Services.walletService = EnvironmentTestSetup.walletService
             Services.businessPartnerDataService = EnvironmentTestSetup.bpdService
             Services.utilsService = EnvironmentTestSetup.utilsService
-            Services.revocationService = EnvironmentTestSetup.revocationMockedService
+            Services.revocationService =  EnvironmentTestSetup.revocationMockedService
         }) {
             // programmatically add base wallet and an additional one
             var walletDto: WalletDto

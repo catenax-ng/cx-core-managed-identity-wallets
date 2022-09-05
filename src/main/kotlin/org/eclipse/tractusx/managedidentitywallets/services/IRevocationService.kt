@@ -41,7 +41,7 @@ interface IRevocationService {
 
     suspend fun revoke(profileName: String, indexOfCredential: Long)
 
-    suspend fun issueStatusListCredentials()
+    suspend fun issueStatusListCredentials(profileName: String? = null, force: Boolean? = false)
 
     companion object {
         private val log = LoggerFactory.getLogger(this::class.java)

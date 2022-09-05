@@ -37,11 +37,13 @@ import org.eclipse.tractusx.managedidentitywallets.models.ssi.ListCredentialRequ
 import org.eclipse.tractusx.managedidentitywallets.services.IBusinessPartnerDataService
 import org.eclipse.tractusx.managedidentitywallets.services.IRevocationService
 import org.eclipse.tractusx.managedidentitywallets.services.IWalletService
+import org.eclipse.tractusx.managedidentitywallets.services.UtilsService
 
 fun Application.appRoutes(
     walletService: IWalletService,
     businessPartnerDataService: IBusinessPartnerDataService,
-    revocationService: IRevocationService
+    revocationService: IRevocationService,
+    utilsService: UtilsService
 ) {
 
     routing {
@@ -50,7 +52,7 @@ fun Application.appRoutes(
             walletRoutes(walletService, businessPartnerDataService)
             businessPartnerDataRoutes(businessPartnerDataService)
             didDocRoutes(walletService)
-            vcRoutes(walletService, revocationService)
+            vcRoutes(walletService, revocationService, utilsService)
             vpRoutes(walletService)
 
         }

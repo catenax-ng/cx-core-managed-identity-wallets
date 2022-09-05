@@ -150,8 +150,10 @@ class AcaPyWalletServiceImpl(
         }
         // For Catena-X Wallet The DID is not registered yet and therefore a credential cannot be issued!
         if (!isCatenaXWallet(walletCreateDto.bpn)) {
-            // TODO replace this when Issue Credential for only 1 ProfileName Feature is implemented!
-            revocationService.issueStatusListCredentials()
+            revocationService.issueStatusListCredentials(
+                profileName = utilsService.getIdentifierOfDid(storedWallet.did),
+                force = true
+            )
         }
 
         return WalletDto(

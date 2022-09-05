@@ -41,8 +41,13 @@ import org.eclipse.tractusx.managedidentitywallets.models.ssi.*
 import org.eclipse.tractusx.managedidentitywallets.models.ssi.JsonLdContexts
 import org.eclipse.tractusx.managedidentitywallets.services.IRevocationService
 import org.eclipse.tractusx.managedidentitywallets.services.IWalletService
+import org.eclipse.tractusx.managedidentitywallets.services.UtilsService
 
-fun Route.vcRoutes(walletService: IWalletService, revocationService: IRevocationService) {
+fun Route.vcRoutes(
+    walletService: IWalletService,
+    revocationService: IRevocationService,
+    utilsService: UtilsService
+) {
 
     route("/credentials") {
 
@@ -192,16 +197,19 @@ fun Route.vcRoutes(walletService: IWalletService, revocationService: IRevocation
                 }
             }
 
-            //TODO A similar endpoint will be added to force update only 1 List.
-            // This Feature has not been merged yet into the Revocation Service
             route("/statusListCredentialRefresh") {
                 notarizedAuthenticate(AuthorizationHandler.JWT_AUTH_TOKEN) {
                     notarizedPost(
-                        PostInfo<Unit, Unit, String>(
-                            summary = "Re-issue the Status-List Credential for all Wallets",
+                        PostInfo<StatusListRefreshParameters, Unit, String>(
+                            summary = "Re-issue the Status-List Credential for all or given wallet",
                             description = "Permission: " +
-                                    "**${AuthorizationHandler.getPermissionOfRole(AuthorizationHandler.ROLE_UPDATE_WALLETS)}**\n" +
+                                    "**${AuthorizationHandler.getPermissionOfRole(AuthorizationHandler.ROLE_UPDATE_WALLETS)}** OR" +
+                                    "**${AuthorizationHandler.getPermissionOfRole(AuthorizationHandler.ROLE_UPDATE_WALLET)}** " +
+                                    "(The BPN of wallet to update must equal BPN of caller) \n" +
                                     "\nRe-issue the Status-List Credential for all registered wallet",
+                            parameterExamples = setOf(
+                                ParameterExample("identifier", "identifier", "BPN0001")
+                            ),
                             requestInfo = null,
                             responseInfo = ResponseInfo(
                                 status = HttpStatusCode.Accepted,
@@ -212,8 +220,22 @@ fun Route.vcRoutes(walletService: IWalletService, revocationService: IRevocation
                             tags = setOf("VerifiableCredentials")
                         )
                     ) {
-                        AuthorizationHandler.checkHasRightsToUpdateWallet(call)
-                        revocationService.issueStatusListCredentials()
+                        val identifier = call.request.queryParameters["identifier"]
+                        AuthorizationHandler.checkHasRightsToUpdateWallet(call, identifier)
+
+                        val force: Boolean = if (!call.request.queryParameters["force"].isNullOrBlank()) {
+                            call.request.queryParameters["force"].toBoolean()
+                        } else { false }
+
+                        if (identifier.isNullOrBlank()) {
+                            revocationService.issueStatusListCredentials()
+                        } else {
+                            val wallet = walletService.getWallet(identifier, false)
+                            revocationService.issueStatusListCredentials(
+                                profileName = utilsService.getIdentifierOfDid(did = wallet.did),
+                                force = force
+                            )
+                        }
                         call.respond(HttpStatusCode.Accepted)
                     }
                 }

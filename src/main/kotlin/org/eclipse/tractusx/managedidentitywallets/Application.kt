@@ -100,7 +100,7 @@ fun Application.module(testing: Boolean = false) {
     Services.revocationService = revocationService
     configureRouting(walletService)
 
-    appRoutes(walletService, businessPartnerDataService, revocationService)
+    appRoutes(walletService, businessPartnerDataService, revocationService, utilsService)
     configurePersistence()
 
     configureJobs()

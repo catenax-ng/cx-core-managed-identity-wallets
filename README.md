@@ -220,7 +220,6 @@ Starting up Docker Containers for Postgres, Keycloak and AcaPy via following ste
 * If the used Indy ledger `--genesis-url https://indy-test.idu.network/genesis \` is write-restricted to endorsers or higher roles, the DID and its VerKey must be registered manually before starting AcaPy. To generate a new DID with a given seed see the section - [Generate DID from Seed](#generateDIDFromSEED)
 * To setup the Postgresql database in the application please see the section below - [Setting up progresql database](#settingUpPostgresSqlDatabase), for the database
 * The tables of the `Revocation Service` should be added manually to the `miwdev` database using the sql script `./dev-asset/dev-containers/revocation/V1.0.0__Create_DB.sql`
-* The used image of the `Revocation Service` need to be replaced by an official one after this [bug](https://gitlab.com/gaia-x/data-infrastructure-federation-services/not/notarization-service/-/issues/73#note_1084951096) is fixed.
 * The keycloak configuration are imported from `./dev-assets/dev-containers/keycloak` in the docker compose file.
 * Keycloak is reachable at `http://localhost:8081/` with `username: admin` and `password: catena`,
   the client id ist `ManagedIdentityWallets` and client secret can be found under the `Clients - ManagedIdentityWallets - Credentials`

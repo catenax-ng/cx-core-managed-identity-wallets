@@ -67,7 +67,7 @@ class RevocationMockedService(private val networkIdentifier: String): IRevocatio
 
     override suspend fun revoke(profileName: String, indexOfCredential: Long) { }
 
-    override suspend fun issueStatusListCredentials() { }
+    override suspend fun issueStatusListCredentials(profileName: String?, force: Boolean?) { }
 
     private fun getIdentifierOfDid(did: String): String {
         val elementsOfDid: List<String> = did.split(":")

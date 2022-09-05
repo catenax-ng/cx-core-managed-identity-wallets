@@ -172,6 +172,16 @@ data class IsRevocable(
 @Serializable
 data class ListNameParameter(
     @Param(type = ParamType.QUERY)
-    @Field(description = "The listName", name = "listName")
+    @Field(description = "The revocation listName", name = "listName")
     val listName: String,
+)
+
+@Serializable
+data class StatusListRefreshParameters(
+    @Param(type = ParamType.QUERY)
+    @Field(description = "The DID or BPN of the wallet whose revocation list should be refreshed", name = "identifier")
+    val identifier: String? = null,
+    @Param(type = ParamType.QUERY)
+    @Field(description = "Force an update. Default is false", name = "force")
+    val force: Boolean? = false,
 )

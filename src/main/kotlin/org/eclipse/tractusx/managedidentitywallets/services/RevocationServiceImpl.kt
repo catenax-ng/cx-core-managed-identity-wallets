@@ -71,12 +71,19 @@ class RevocationServiceImpl(
         }
     }
 
-    override suspend fun issueStatusListCredentials() {
-        client.post<HttpResponse> {
-            url("$revocationUrl/management/lists/issue-credentials")
-            accept(ContentType.Application.Json)
-            contentType(ContentType.Application.Json)
+    override suspend fun issueStatusListCredentials(profileName: String?, force: Boolean?) {
+        if (profileName.isNullOrBlank()) {
+            client.post<HttpResponse> {
+                url("$revocationUrl/management/lists/issue-credentials")
+                accept(ContentType.Application.Json)
+            }
+        } else {
+            client.post<HttpResponse> {
+                url("$revocationUrl/management/lists/issue-credential/$profileName?force=$force")
+                accept(ContentType.Application.Json)
+            }
         }
+
     }
 
 }

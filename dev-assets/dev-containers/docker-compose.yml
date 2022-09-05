@@ -65,9 +65,7 @@ services:
     ]
 
   revocation:
-    # TODO replace the temporary image after the bug is fixed!
-    # image: registry.gitlab.com/gaia-x/data-infrastructure-federation-services/not/notarization-service/revocation:1.0.0-SNAPSHOT-quarkus-2.10.2.Final-java17
-    image: majdtl51/gaia-x-data-infrastructure-federation-services-not-notarization-service-revocation:1.0.1-SNAPSHOT
+    image: registry.gitlab.com/gaia-x/data-infrastructure-federation-services/not/notarization-service/revocation:java17-latest
     container_name: revocation
     ports:
       - "8086:8086"
