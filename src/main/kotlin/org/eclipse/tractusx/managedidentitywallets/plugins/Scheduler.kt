@@ -41,14 +41,14 @@ fun Application.configureJobs() {
     val bpdmUpdate: RecurringTask<Void> = Tasks.recurring("bpdm-update",
         // Spring Scheduled tasks (second, minute, hour, day of month, month, day(s) of week)
         Schedules.cron("0 0 $pullDataAtHour * * *"))
-        .execute { inst, ctx ->
+        .execute { _, _ ->
             runPullDataAndUpdateCatenaXCredentialJobPayload()
         }
 
     val updateRevocationList: RecurringTask<Void> = Tasks.recurring("revocation-list-update",
         // Spring Scheduled tasks (second, minute, hour, day of month, month, day(s) of week)
         Schedules.cron("0 0 $createCredentailsAtHour * * *"))
-        .execute { inst, ctx ->
+        .execute { _, _ ->
             runIssueStatusListCredentialsJobPayload()
         }
 

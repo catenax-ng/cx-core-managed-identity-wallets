@@ -40,7 +40,6 @@ import org.eclipse.tractusx.managedidentitywallets.models.*
 import org.eclipse.tractusx.managedidentitywallets.models.ssi.*
 import org.eclipse.tractusx.managedidentitywallets.models.ssi.JsonLdContexts
 import org.eclipse.tractusx.managedidentitywallets.services.IBusinessPartnerDataService
-import org.eclipse.tractusx.managedidentitywallets.services.IRevocationService
 import org.eclipse.tractusx.managedidentitywallets.services.IWalletService
 
 import org.jetbrains.exposed.exceptions.ExposedSQLException
