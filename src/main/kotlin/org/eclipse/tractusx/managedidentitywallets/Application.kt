@@ -82,7 +82,8 @@ fun Application.module(testing: Boolean = false) {
         walletRepository,
         credRepository,
         utilsService,
-        revocationService)
+        revocationService
+    )
     val bpdmConfig = BPDMConfig(
         url = environment.config.property("bpdm.datapoolUrl").getString(),
         tokenUrl = environment.config.property("bpdm.authUrl").getString(),

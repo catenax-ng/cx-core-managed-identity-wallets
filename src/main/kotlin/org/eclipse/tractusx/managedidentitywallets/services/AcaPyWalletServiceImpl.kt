@@ -150,6 +150,7 @@ class AcaPyWalletServiceImpl(
         }
         // For Catena-X Wallet The DID is not registered yet and therefore a credential cannot be issued!
         if (!isCatenaXWallet(walletCreateDto.bpn)) {
+            // TODO replace this when Issue Credential for only 1 ProfileName Feature is implemented!
             revocationService.issueStatusListCredentials()
         }
 
@@ -641,13 +642,7 @@ class AcaPyWalletServiceImpl(
         profileName: String,
         listCredentialRequestData: ListCredentialRequestData
     ): VerifiableCredentialDto {
-        var issuerDid = "did:indy:$networkIdentifier:$profileName"
-        // check if wallet exists
-        //try {
-         //   getWallet(issuerDid, false)
-        //} catch (e: NotFoundException) {
-        //    val walletDto =
-        //}
+        val issuerDid = "did:indy:$networkIdentifier:$profileName"
         val verifiableCredentialRequestDto = VerifiableCredentialRequestDto(
             id = listCredentialRequestData.listId,
             context = listOf(
@@ -692,15 +687,14 @@ class AcaPyWalletServiceImpl(
         val walletOfIssuer = getWalletExtendedInformation(issuerDid)
 
         if (vc.credentialStatus == null) {
-            throw UnprocessableEntityException("The given Verifiable Credential is not revocable!")
+            throw UnprocessableEntityException("The given verifiable credential is not revocable!")
         }
         val index = vc.credentialStatus.index ?:
-            throw UnprocessableEntityException("The given Verifiable Credential has no Index in its CredentialStatus")
+            throw UnprocessableEntityException("The given verifiable credential has no Index in its CredentialStatus")
 
         validateVerifiableCredential(vc, withDateValidation = false, withRevocationCheck = false, walletOfIssuer.walletToken)
 
-        val profileName = utilsService.getIdentifierOfDid(walletOfIssuer.did)
-        revocationService.revoke(profileName, index.toLong())
+        revocationService.revoke(utilsService.getIdentifierOfDid(walletOfIssuer.did), index.toLong())
     }
 
 }

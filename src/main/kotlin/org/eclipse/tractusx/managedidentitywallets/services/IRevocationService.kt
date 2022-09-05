@@ -27,6 +27,7 @@ import io.ktor.client.features.observer.*
 import org.eclipse.tractusx.managedidentitywallets.models.ssi.CredentialStatus
 import io.ktor.client.features.logging.*
 import org.eclipse.tractusx.managedidentitywallets.models.ssi.VerifiableCredentialDto
+import org.slf4j.LoggerFactory
 
 interface IRevocationService {
 
@@ -43,6 +44,8 @@ interface IRevocationService {
     suspend fun issueStatusListCredentials()
 
     companion object {
+        private val log = LoggerFactory.getLogger(this::class.java)
+
         fun createRevocationService(revocationUrl: String): IRevocationService {
             return RevocationServiceImpl(
                 revocationUrl,
@@ -50,8 +53,8 @@ interface IRevocationService {
                     expectSuccess = true
                     install(ResponseObserver) {
                         onResponse { response ->
-                            println("HTTP status: ${response.status.value}")
-                            println("HTTP description: ${response.status.description}")
+                            log.debug("HTTP status: ${response.status.value}")
+                            log.debug("HTTP description: ${response.status.description}")
                         }
                     }
                     install(Logging) {

@@ -33,6 +33,7 @@ import org.eclipse.tractusx.managedidentitywallets.models.ssi.acapy.VerifyRespon
 import org.eclipse.tractusx.managedidentitywallets.models.ssi.acapy.WalletAndAcaPyConfig
 import org.eclipse.tractusx.managedidentitywallets.persistence.repositories.CredentialRepository
 import org.eclipse.tractusx.managedidentitywallets.persistence.repositories.WalletRepository
+import org.slf4j.LoggerFactory
 
 interface IWalletService {
 
@@ -110,6 +111,8 @@ interface IWalletService {
     suspend fun revokeVerifiableCredential(vc: VerifiableCredentialDto)
 
     companion object {
+        private val log = LoggerFactory.getLogger(this::class.java)
+
         fun createWithAcaPyService(
             walletAndAcaPyConfig: WalletAndAcaPyConfig,
             walletRepository: WalletRepository,
@@ -124,8 +127,8 @@ interface IWalletService {
                     expectSuccess = true
                     install(ResponseObserver) {
                         onResponse { response ->
-                            println("HTTP status: ${response.status.value}")
-                            println("HTTP description: ${response.status.description}")
+                            log.debug("HTTP status: ${response.status.value}")
+                            log.debug("HTTP description: ${response.status.description}")
                         }
                     }
                     HttpResponseValidator {

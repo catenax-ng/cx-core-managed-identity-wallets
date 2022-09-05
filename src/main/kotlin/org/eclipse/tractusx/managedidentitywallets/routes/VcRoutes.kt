@@ -173,7 +173,7 @@ fun Route.vcRoutes(walletService: IWalletService, revocationService: IRevocation
                                 "(The BPN of the issuer of the Verifiable Credential must equal BPN of caller)\n" +
                                 "\nRevoke issued Verifiable Credential by issuer",
                         requestInfo = RequestInfo(
-                            description = "The verifiable credential input data",
+                            description = "The signed verifiable credential",
                             examples = signedVerifiableCredentialDtoExample
                         ),
                         responseInfo = ResponseInfo(
@@ -192,15 +192,15 @@ fun Route.vcRoutes(walletService: IWalletService, revocationService: IRevocation
                 }
             }
 
+            //TODO A similar endpoint will be added to force update only 1 List.
+            // This Feature has not been merged yet into the Revocation Service
             route("/statusListCredentialRefresh") {
                 notarizedAuthenticate(AuthorizationHandler.JWT_AUTH_TOKEN) {
                     notarizedPost(
                         PostInfo<Unit, Unit, String>(
                             summary = "Re-issue the Status-List Credential for all Wallets",
                             description = "Permission: " +
-                                    "**${AuthorizationHandler.getPermissionOfRole(AuthorizationHandler.ROLE_UPDATE_WALLETS)}** OR " +
-                                    "**${AuthorizationHandler.getPermissionOfRole(AuthorizationHandler.ROLE_UPDATE_WALLET)}** " +
-                                    "(The BPN of the issuer of the Verifiable Credential must equal BPN of caller)\n" +
+                                    "**${AuthorizationHandler.getPermissionOfRole(AuthorizationHandler.ROLE_UPDATE_WALLETS)}**\n" +
                                     "\nRe-issue the Status-List Credential for all registered wallet",
                             requestInfo = null,
                             responseInfo = ResponseInfo(
@@ -237,7 +237,7 @@ fun Route.vcRoutes(walletService: IWalletService, revocationService: IRevocation
                     tags = setOf("VerifiableCredentials"),
                 )
             ) {
-                val listName = call.parameters["listName"] ?: throw BadRequestException("ListName is required!")
+                val listName = call.parameters["listName"] ?: throw BadRequestException("Missing or malformed listName")
                 call.respond(HttpStatusCode.OK, revocationService.getOwnStatusListCredential(listName))
             }
         }
