@@ -52,42 +52,41 @@ build system.
 - DBeaver - https://dbeaver.io/
 - Gradle - https://gradle.org/install/
   
-## Steps for initial lokal Deployment and Wallet Creation <a id= "initialDeploymentandWalletCreation"></a>
+## Steps for initial local deployment and wallet Creation <a id= "initialDeploymentandWalletCreation"></a>
 
 1. Clone the Github Repository - https://github.com/catenax-ng/product-core-managed-identity-wallets.git
-2. (Optional) Clone the [Aca-Py Docker Image](#acapyDockerImage)
-3. Copy .env.example and rename to dev.env see section [IntelliJ Development Setup](#intellijDevelopmentSetup)
-4. Start Docker containers of Keycloak, Acapy and Postgres, see section [Startup Docker Containers](#startupDockerContainers)
-5. Setup Postgres Connection in DBeaver with Credentials -postgres, -cx_password on port 5432
-    1. Add the postgres settings to dev.env and comment out the h2-settings also in section
-    2. Create miwdev Database with following commands:
+1. (Optional) Clone the [Aca-Py Docker Image](#acapyDockerImage)
+1. Copy .env.example and rename to dev.env see section [IntelliJ Development Setup](#intellijDevelopmentSetup)
+1. Start Docker containers of Keycloak, Acapy and Postgres, see section [Startup Docker Containers](#startupDockerContainers)
+1. Setup Postgres Connection in DBeaver with Credentials -postgres, -cx_password on port 5432
+1. Create miwdev Database with following commands:
     ```
     CREATE DATABASE miwdev;
     CREATE ROLE miwdevuser WITH LOGIN NOSUPERUSER INHERIT CREATEDB NOCREATEROLE NOREPLICATION PASSWORD '^cXnF61qM1kf';
     GRANT CONNECT ON DATABASE miwdev TO miwdevuser;
     ```
     
-    Then following environment settings in your local environment file (potentially
-    named `dev.env`) can be used:
+    Then following environment settings in your local environment file (potentially named `dev.env`) can be used (already pre-defined in `.env.example`):
     
     ```
     CX_DB_JDBC_URL="jdbc:postgresql://localhost:5432/miwdev?user=miwdevuser&password=^cXnF61qM1kf"
     CX_DB_JDBC_DRIVER="org.postgresql.Driver"
     ```
-6. Run `Application.kt` in IntelliJ (with `dev.env` as configuration) or in your IDE or run it on the command line (on MacOS: `set -a; source dev.env; set +a` and `./gradlew run`)
-7. Start Postman and add the environment and the collection from ./dev-assets/
+1. Add the tables of the `Revocation Service` to the `miwdev` database using the sql script `./dev-asset/dev-containers/revocation/V1.0.0__Create_DB.sql`
+1. Run `Application.kt` in IntelliJ (with `dev.env` as configuration) or in your IDE or run it on the command line (on MacOS: `set -a; source dev.env; set +a` and `./gradlew run`)
+1. Start Postman and add the environment and the collection from ./dev-assets/
     1. In the added environment make sure that the client_id and client_secret are correct. Check the steps in [start up Docker containers](#startupDockerContainers) to get the current values of the client id and secret
     2. In the body of *Create wallet in Managed Identity Wallets*, change the `bpn` value to your `CX_BPN` from your env file
        1. ![Change the BPN name](docs/images/ChangeBpnName.png "Adjusting the BPN Name")
     3. Execute the request and note down your `did` and `verKey` from the response
        1. ![Create wallet response](docs/images/CreateWalletResponse.png "Wallet creation response")
-8. Register public DID
+1. Register public DID
     1. Register your DID from your Wallet at https://indy-test.idu.network/ with "Register from DID"
        1. ![Public DID registration](docs/images/PublicDIDRegister.png "Public DID registration")
     2. Register your DID with Managed Identity Wallets with a POST to `/api/wallets/<CX Base Wallet BPN>/public` and as body the ver key
        `{ "verKey": "verification key from creation" }`
-9. Issue Status-List Credential by sending a POST request to `/api/credentials/revocations/statusListCredentialRefresh`. This step is required because the Credential can only be issued after the DID is registiered on Ledger and set to Public
-10. Now you have created your own Wallet and published your DID to the Ledger, you can retrieve the list of wallets in Postman via the *Get wallets from Managed Identity Wallets*
+1. Issue Status-List Credential by sending a POST request to `/api/credentials/revocations/statusListCredentialRefresh`. This step is required because the Credential can only be issued after the DID is registiered on Ledger and set to Public
+1. Now you have created your own Wallet and published your DID to the Ledger, you can retrieve the list of wallets in Postman via the *Get wallets from Managed Identity Wallets*
 
 ## Building with gradle <a id= "buildingWithGradle"></a>
 

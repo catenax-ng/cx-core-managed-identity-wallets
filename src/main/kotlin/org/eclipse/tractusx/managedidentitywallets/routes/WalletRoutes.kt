@@ -326,11 +326,11 @@ val issuedVerifiableCredentialRequestDtoExample = mapOf(
         expirationDate = "2019-06-17T18:56:59Z",
         credentialSubject = mapOf("college" to "Test-University"),
         credentialStatus = CredentialStatus(
-            statusId = "http://localhost:8080/api/credentials/status/test#3",
+            statusId = "http://example.edu/api/credentials/status/test#3",
             credentialType = "StatusList2021Entry",
             statusPurpose = "revocation",
             index= "3",
-            listUrl= "http://localhost:8080/api/credentials/status/test"
+            listUrl= "http://example.edu/api/credentials/status/test"
         ),
         proof = LdProofDto(
             type = "Ed25519Signature2018",
