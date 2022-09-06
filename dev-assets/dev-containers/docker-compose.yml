@@ -64,9 +64,9 @@ services:
         --log-level DEBUG",
     ]
 
-  revocation:
+  cx_revocation_service:
     image: registry.gitlab.com/gaia-x/data-infrastructure-federation-services/not/notarization-service/revocation:java17-latest
-    container_name: revocation
+    container_name: cx_revocation_service
     ports:
       - "8086:8086"
     depends_on:

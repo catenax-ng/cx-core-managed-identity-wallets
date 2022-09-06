@@ -50,7 +50,7 @@ class RevocationServiceImpl(
         return Json.decodeFromString(httpResponse.readText())
     }
 
-    override suspend fun getOwnStatusListCredential(listName: String): VerifiableCredentialDto {
+    override suspend fun getStatusListCredentialOfManagedWallet(listName: String): VerifiableCredentialDto {
         return getStatusListCredentialOfUrl("$revocationUrl/status/$listName")
     }
 

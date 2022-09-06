@@ -221,8 +221,7 @@ class AcaPyWalletServiceImpl(
     }
 
     override suspend fun issueCatenaXCredential(
-        vcCatenaXRequest: VerifiableCredentialRequestWithoutIssuerDto,
-        isRevocable: Boolean
+        vcCatenaXRequest: VerifiableCredentialRequestWithoutIssuerDto
     ): VerifiableCredentialDto {
         log.debug("Issue CatenaX Credential $vcCatenaXRequest")
         val verifiableCredentialRequestDto = VerifiableCredentialRequestDto(
@@ -234,14 +233,12 @@ class AcaPyWalletServiceImpl(
             expirationDate = vcCatenaXRequest.expirationDate,
             credentialSubject = vcCatenaXRequest.credentialSubject,
             holderIdentifier = vcCatenaXRequest.holderIdentifier,
+            isRevocable = vcCatenaXRequest.isRevocable
         )
-        return issueCredential(verifiableCredentialRequestDto, isRevocable)
+        return issueCredential(verifiableCredentialRequestDto)
     }
 
-    override suspend fun issueCredential(
-        vcRequest: VerifiableCredentialRequestDto,
-        isRevocable: Boolean
-    ): VerifiableCredentialDto {
+    override suspend fun issueCredential(vcRequest: VerifiableCredentialRequestDto): VerifiableCredentialDto {
         log.debug("Issue Credential $vcRequest")
         val issuerWalletData = getWalletExtendedInformation(vcRequest.issuerIdentifier)
         val issuerDid = issuerWalletData.did
@@ -257,7 +254,7 @@ class AcaPyWalletServiceImpl(
         }
 
         var credentialStatus: CredentialStatus? = null
-        if (isRevocable) {
+        if (vcRequest.isRevocable) {
             credentialStatus = revocationService.addStatusEntry(utilsService.getIdentifierOfDid(issuerDid))
         }
         val verificationMethod = getVerificationMethod(issuerDid, 0)
@@ -499,7 +496,7 @@ class AcaPyWalletServiceImpl(
             throw UnprocessableEntityException("Cannot verify verifiable credential ${vc.id} due to missing proof")
         }
         if (withRevocationCheck) {
-            revocationValidation(vc, walletToken)
+            validateRevocation(vc, walletToken)
         }
         val verifyReq = VerifyRequest(
             signedDoc = vc,
@@ -574,20 +571,7 @@ class AcaPyWalletServiceImpl(
         }
     }
 
-    /**
-     * Check if the given verifiable credential has been revoked!
-     * Steps:
-     *  - if the credential does not have a credentialStatus then it is not revorcable and Therefore not revoked!
-     *  - validate the type and statusPurpose in the credentialStatus
-     *  - check if the index and the url of the statusListCredential exists
-     *  - get the statusListCredential using the url
-     *  - validate the statusListCredential (issuer, signature, type, statusPurpose and encodedList)
-     *  - decode encodedList to Bitset
-     *  - check the index of the credential in the decoded Bitset:
-     *      - if the bit is 1 (true) then the credential is revoked
-     *      - if the bit is 0 (false) not revoked!
-     */
-    private suspend fun revocationValidation(vc: VerifiableCredentialDto, walletToken: String) {
+    private suspend fun validateRevocation(vc: VerifiableCredentialDto, walletToken: String) {
         // Credential is not revocable
         if (vc.credentialStatus == null) {
             return
@@ -603,18 +587,18 @@ class AcaPyWalletServiceImpl(
 
         val listCredentialSubjectAsMap  = statusListVerifiableCredential.credentialSubject
 
-        if (listCredentialSubjectAsMap.containsKey("credentialType") &&
-            listCredentialSubjectAsMap["credentialType"] != "StatusList2021") {
+        if (listCredentialSubjectAsMap.containsKey(ListCredentialSubject.CREDENTIAL_TYPE_KEY) &&
+            listCredentialSubjectAsMap[ListCredentialSubject.CREDENTIAL_TYPE_KEY] != ListCredentialSubject.CREDENTIAL_TYPE) {
             throw UnprocessableEntityException("Cannot verify revocation status of credential ${vc.id} " +
                     "due to wrong type of extracted StatusList Credential")
         }
-        if (listCredentialSubjectAsMap.containsKey("statusPurpose") &&
-            listCredentialSubjectAsMap["statusPurpose"] != "revocation") {
+        if (listCredentialSubjectAsMap.containsKey(ListCredentialSubject.STATUS_PURPOSE_KEY) &&
+            listCredentialSubjectAsMap[ListCredentialSubject.STATUS_PURPOSE_KEY] != ListCredentialSubject.STATUS_PURPOSE) {
             throw UnprocessableEntityException("Cannot verify revocation status of credential ${vc.id} " +
                     "due to wrong statusPurpose of extracted StatusList Credential")
         }
-        if (listCredentialSubjectAsMap.containsKey("encodedList") &&
-            listCredentialSubjectAsMap["encodedList"].toString().isBlank()) {
+        if (listCredentialSubjectAsMap.containsKey(ListCredentialSubject.ENCODED_LIST_KEY) &&
+            listCredentialSubjectAsMap[ListCredentialSubject.ENCODED_LIST_KEY].toString().isBlank()) {
             throw UnprocessableEntityException("Cannot verify revocation status of credential ${vc.id} " +
                     "due to empty or null encodedList of extracted StatusList Credential")
         }
@@ -650,9 +634,10 @@ class AcaPyWalletServiceImpl(
                 "statusPurpose" to "revocation",
                 "encodedList" to listCredentialRequestData.subject.encodedList
             ),
-            issuanceDate = JsonLDUtils.dateToString(Date.from(Instant.now()))
+            issuanceDate = JsonLDUtils.dateToString(Date.from(Instant.now())),
+            isRevocable = false
         )
-        return issueCredential(verifiableCredentialRequestDto,false)
+        return issueCredential(verifiableCredentialRequestDto)
     }
 
     private suspend fun signVerifiableCredential(
@@ -696,10 +681,10 @@ class AcaPyWalletServiceImpl(
         credentialId: String? = "",
         credentialStatus: CredentialStatus
     ) {
-        if (credentialStatus.credentialType != "StatusList2021Entry") {
+        if (credentialStatus.credentialType != CredentialStatus.CREDENTIAL_TYPE) {
             throw UnprocessableEntityException("Credential with Id $credentialId has invalid credential status 'Type'")
         }
-        if (credentialStatus.statusPurpose != "revocation") {
+        if (credentialStatus.statusPurpose != CredentialStatus.STATUS_PURPOSE) {
             throw UnprocessableEntityException("Credential with Id $credentialId has invalid 'statusPurpose'")
         }
         if (credentialStatus.index.isBlank() || credentialStatus.index.toLong() < 0) {

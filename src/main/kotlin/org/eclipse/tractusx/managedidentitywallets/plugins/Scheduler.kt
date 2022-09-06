@@ -36,7 +36,7 @@ fun Application.configureJobs() {
 
     val jdbcUrl = environment.config.property("db.jdbcUrl").getString()
     val pullDataAtHour = environment.config.property("bpdm.pullDataAtHour").getString().toInt()
-    val createCredentailsAtHour = environment.config.property("revocation.createStatusListCredentialAtHour").getString().toInt()
+    val createCredentialsAtHour = environment.config.property("revocation.createStatusListCredentialAtHour").getString().toInt()
 
     val bpdmUpdate: RecurringTask<Void> = Tasks.recurring("bpdm-update",
         // Spring Scheduled tasks (second, minute, hour, day of month, month, day(s) of week)
@@ -47,7 +47,7 @@ fun Application.configureJobs() {
 
     val updateRevocationList: RecurringTask<Void> = Tasks.recurring("revocation-list-update",
         // Spring Scheduled tasks (second, minute, hour, day of month, month, day(s) of week)
-        Schedules.cron("0 0 $createCredentailsAtHour * * *"))
+        Schedules.cron("0 0 $createCredentialsAtHour * * *"))
         .execute { _, _ ->
             runIssueStatusListCredentialsJobPayload()
         }

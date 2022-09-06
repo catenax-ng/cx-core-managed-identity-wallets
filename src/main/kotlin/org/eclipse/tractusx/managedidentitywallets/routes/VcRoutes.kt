@@ -91,16 +91,13 @@ fun Route.vcRoutes(
 
         notarizedAuthenticate(AuthorizationHandler.JWT_AUTH_TOKEN) {
             notarizedPost(
-                PostInfo<IsRevocable, VerifiableCredentialRequestDto, VerifiableCredentialDto>(
+                PostInfo<Unit, VerifiableCredentialRequestDto, VerifiableCredentialDto>(
                     summary = "Issue Verifiable Credential",
                     description = "Permission: " +
                         "**${AuthorizationHandler.getPermissionOfRole(AuthorizationHandler.ROLE_UPDATE_WALLETS)}** OR " +
                         "**${AuthorizationHandler.getPermissionOfRole(AuthorizationHandler.ROLE_UPDATE_WALLET)}** " +
                             "(The BPN of the issuer of the Verifiable Credential must equal BPN of caller)\n" +
                         "\nIssue a verifiable credential with a given issuer DID",
-                    parameterExamples = setOf(
-                        ParameterExample("isRevocable", "isRevocable", false)
-                    ),
                     requestInfo = RequestInfo(
                         description = "The verifiable credential input data",
                         examples = verifiableCredentialRequestDtoExample
@@ -115,30 +112,24 @@ fun Route.vcRoutes(
                     tags = setOf("VerifiableCredentials")
                 )
             ) {
-                val isRevocable = if (call.request.queryParameters["isRevocable"] != null) {
-                    call.request.queryParameters["isRevocable"].toBoolean()
-                } else { true }
                 val verifiableCredentialDto = call.receive<VerifiableCredentialRequestDto>()
 
                 AuthorizationHandler.checkHasRightsToUpdateWallet(call, verifiableCredentialDto.issuerIdentifier)
 
-                call.respond(HttpStatusCode.Created, walletService.issueCredential(verifiableCredentialDto, isRevocable))
+                call.respond(HttpStatusCode.Created, walletService.issueCredential(verifiableCredentialDto))
             }
         }
 
         route("/issuer") {
             notarizedAuthenticate(AuthorizationHandler.JWT_AUTH_TOKEN) {
                 notarizedPost(
-                    PostInfo<IsRevocable, VerifiableCredentialRequestWithoutIssuerDto, VerifiableCredentialDto>(
+                    PostInfo<Unit, VerifiableCredentialRequestWithoutIssuerDto, VerifiableCredentialDto>(
                         summary = "Issue a Verifiable Credential with Catena-X platform issuer",
                         description = "Permission: " +
                             "**${AuthorizationHandler.getPermissionOfRole(AuthorizationHandler.ROLE_UPDATE_WALLETS)}** OR " +
                             "**${AuthorizationHandler.getPermissionOfRole(AuthorizationHandler.ROLE_UPDATE_WALLET)}** " +
                                 "(The BPN of Catena-X wallet must equal BPN of caller)\n" +
                             "\nIssue a verifiable credential by Catena-X wallet",
-                        parameterExamples = setOf(
-                            ParameterExample("isRevocable", "isRevocable", false)
-                        ),
                         requestInfo = RequestInfo(
                             description = "The verifiable credential input",
                             examples = verifiableCredentialRequestWithoutIssuerDtoExample
@@ -153,15 +144,11 @@ fun Route.vcRoutes(
                         tags = setOf("VerifiableCredentials")
                     )
                 ) {
-                    val isRevocable = if (call.request.queryParameters["isRevocable"] != null) {
-                        call.request.queryParameters["isRevocable"].toBoolean()
-                    } else { true }
-
                     val verifiableCredentialRequestDto = call.receive<VerifiableCredentialRequestWithoutIssuerDto>()
 
                     AuthorizationHandler.checkHasRightsToUpdateWallet(call, Services.walletService.getCatenaXBpn())
 
-                    val verifiableCredentialDto = walletService.issueCatenaXCredential(verifiableCredentialRequestDto, isRevocable)
+                    val verifiableCredentialDto = walletService.issueCatenaXCredential(verifiableCredentialRequestDto)
                     call.respond(HttpStatusCode.Created, verifiableCredentialDto)
                 }
             }
@@ -260,7 +247,7 @@ fun Route.vcRoutes(
                 )
             ) {
                 val listName = call.parameters["listName"] ?: throw BadRequestException("Missing or malformed listName")
-                call.respond(HttpStatusCode.OK, revocationService.getOwnStatusListCredential(listName))
+                call.respond(HttpStatusCode.OK, revocationService.getStatusListCredentialOfManagedWallet(listName))
             }
         }
     }
@@ -341,13 +328,13 @@ val listCredentialRequestData = mapOf(
 
 val statusListCredentialExample = mapOf(
     "demo" to VerifiableCredentialDto(
-        id = "http://localhost:8080/api/credentials/status/5c145c85-8fcb-42d4-893c-d19a55581e00",
+        id = "https://example.com/api/credentials/status/5c145c85-8fcb-42d4-893c-d19a55581e00",
         context = listOf("https://www.w3.org/2018/credentials/v1", "https://w3id.org/vc/status-list/2021/v1"),
         type = listOf(    "VerifiableCredential", "StatusList2021Credential"),
         issuer =  "did:indy:local:test:Ae49DuXZy2PLBjSL9W2V2i",
         issuanceDate = "2022-08-31T07:19:36Z",
         credentialSubject = mapOf(
-            "id" to "http://localhost:8080/api/credentials/status/5c145c85-8fcb-42d4-893c-d19a55581e00#list",
+            "id" to "https://example.com/api/credentials/status/5c145c85-8fcb-42d4-893c-d19a55581e00#list",
             "type" to "StatusList2021",
             "statusPurpose" to "revocation",
             "encodedList" to "H4sIAAAAAAAAAO3BIQEAAAACIAf4f68zLEADAAAAAAAAAAAAAAAAAAAAvA3HJiyHAEAAAA=="

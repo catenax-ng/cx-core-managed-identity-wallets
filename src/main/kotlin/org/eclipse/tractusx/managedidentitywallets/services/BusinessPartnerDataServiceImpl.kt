@@ -190,7 +190,7 @@ class BusinessPartnerDataServiceImpl(private val walletService: IWalletService,
                 JsonLdTypes.LEGAL_FORM_TYPE -> prepareLegalFormCredential(bpn, data as LegalFormDto)
                 else -> throw NotImplementedException("Credential of type $type is not implemented!")
             }
-            val verifiableCredential: VerifiableCredentialDto = walletService.issueCatenaXCredential(vcToIssue, true)
+            val verifiableCredential: VerifiableCredentialDto = walletService.issueCatenaXCredential(vcToIssue)
             val issuedVC = toIssuedVerifiableCredentialRequestDto(verifiableCredential)
             if (issuedVC != null) {
                 walletService.storeCredential(bpn, issuedVC)
@@ -229,7 +229,8 @@ class BusinessPartnerDataServiceImpl(private val walletService: IWalletService,
                     name = name.language.name
                 )
             ),
-            holderIdentifier = bpn
+            holderIdentifier = bpn,
+            isRevocable = true
         )
     }
 
@@ -255,7 +256,8 @@ class BusinessPartnerDataServiceImpl(private val walletService: IWalletService,
                 "language" to legalForm.language,
                 "categories" to legalForm.categories
             ),
-            holderIdentifier = bpn
+            holderIdentifier = bpn,
+            isRevocable = true
         )
     }
 
@@ -285,7 +287,8 @@ class BusinessPartnerDataServiceImpl(private val walletService: IWalletService,
                 "nationalBankAccountIdentifier" to bankAccount.nationalBankAccountIdentifier,
                 "nationalBankIdentifier" to bankAccount.nationalBankIdentifier
             ),
-            holderIdentifier = bpn
+            holderIdentifier = bpn,
+            isRevocable = true
         )
     }
 
@@ -406,7 +409,8 @@ class BusinessPartnerDataServiceImpl(private val walletService: IWalletService,
             type = listOf(JsonLdTypes.ADDRESS_TYPE, JsonLdTypes.CREDENTIAL_TYPE),
             issuanceDate = currentDateAsString,
             credentialSubject = credSubject,
-            holderIdentifier = bpn
+            holderIdentifier = bpn,
+            isRevocable = true
         )
     }
 
@@ -426,7 +430,8 @@ class BusinessPartnerDataServiceImpl(private val walletService: IWalletService,
                 "status" to "Active",
                 "startTime" to currentDateAsString
             ),
-            holderIdentifier = bpn
+            holderIdentifier = bpn,
+            isRevocable = true
         )
     }
 
@@ -443,7 +448,8 @@ class BusinessPartnerDataServiceImpl(private val walletService: IWalletService,
                 "type" to listOf(JsonLdTypes.BPN_TYPE),
                 "bpn" to bpn
             ),
-            holderIdentifier = bpn
+            holderIdentifier = bpn,
+            isRevocable = true
         )
     }
 

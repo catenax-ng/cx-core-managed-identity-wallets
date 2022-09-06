@@ -55,15 +55,9 @@ interface IWalletService {
 
     fun storeCredential(identifier: String, issuedCredential: IssuedVerifiableCredentialRequestDto): Boolean
 
-    suspend fun issueCredential(
-        vcRequest: VerifiableCredentialRequestDto,
-        isRevocable: Boolean
-    ): VerifiableCredentialDto
+    suspend fun issueCredential(vcRequest: VerifiableCredentialRequestDto): VerifiableCredentialDto
 
-    suspend fun issueCatenaXCredential(
-        vcCatenaXRequest: VerifiableCredentialRequestWithoutIssuerDto,
-        isRevocable: Boolean
-    ): VerifiableCredentialDto
+    suspend fun issueCatenaXCredential(vcCatenaXRequest: VerifiableCredentialRequestWithoutIssuerDto): VerifiableCredentialDto
 
     suspend fun resolveDocument(identifier: String): DidDocumentDto
 

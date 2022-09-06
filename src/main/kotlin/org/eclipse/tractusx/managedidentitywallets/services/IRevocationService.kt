@@ -35,7 +35,7 @@ interface IRevocationService {
 
     suspend fun addStatusEntry(profileName: String): CredentialStatus
 
-    suspend fun getOwnStatusListCredential(listName: String): VerifiableCredentialDto
+    suspend fun getStatusListCredentialOfManagedWallet(listName: String): VerifiableCredentialDto
 
     suspend fun getStatusListCredentialOfUrl(statusListUrl: String): VerifiableCredentialDto
 

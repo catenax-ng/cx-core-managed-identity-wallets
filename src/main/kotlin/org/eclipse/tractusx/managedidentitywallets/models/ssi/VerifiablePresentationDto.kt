@@ -65,8 +65,7 @@ data class WithDateValidation(
     val withDateValidation: Boolean? = false,
     @Param(type = ParamType.QUERY)
     @Field(
-        description = "Optional Flag whether to check if the Verifiable Credentials has been revoked. " +
-                "Default is true. If the Credential is not revocable then it will be ignored!",
+        description = "Optional flag to check if any of the verifiable credentials has been revoked. Default is true",
         name = "withRevocationValidation"
     )
     val withRevocationValidation: Boolean = true
@@ -89,8 +88,7 @@ data class VerifiablePresentationIssuanceParameter(
     val withCredentialsDateValidation: Boolean = true,
     @Param(type = ParamType.QUERY)
     @Field(
-        description = "Optional Flag whether to check if the Verifiable Credentials has been revoked. " +
-                "Default is true. If the Credential is not revocable then it will be ignored!",
+        description = "Optional flag to check if any of the verifiable credentials has been revoked. Default is true",
         name = "withRevocationValidation"
     )
     val withRevocationValidation: Boolean = true

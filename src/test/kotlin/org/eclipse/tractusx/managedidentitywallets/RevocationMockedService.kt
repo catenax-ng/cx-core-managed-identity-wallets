@@ -29,28 +29,28 @@ class RevocationMockedService(private val networkIdentifier: String): IRevocatio
 
     override suspend fun addStatusEntry(profileName: String): CredentialStatus {
         return CredentialStatus(
-            statusId = "http://localhost:8080/api/credentials/status/${SingletonTestData.revocationListName}#${SingletonTestData.credentialIndex}",
+            statusId = "https://example.com/api/credentials/status/${SingletonTestData.revocationListName}#${SingletonTestData.credentialIndex}",
             credentialType = "StatusList2021Entry",
             statusPurpose = "revocation",
             index = SingletonTestData.credentialIndex.toString(),
-            listUrl = "http://localhost:8080/api/credentials/status/${SingletonTestData.revocationListName}"
+            listUrl = "https://example.com/api/credentials/status/${SingletonTestData.revocationListName}"
         )
     }
 
-    override suspend fun getOwnStatusListCredential(listName: String): VerifiableCredentialDto {
+    override suspend fun getStatusListCredentialOfManagedWallet(listName: String): VerifiableCredentialDto {
         return getStatusListCredentialOfUrl("Mocked-URL")
     }
 
     override suspend fun getStatusListCredentialOfUrl(statusListUrl: String): VerifiableCredentialDto {
         val didOfIssuer = "did:indy:${networkIdentifier}:${getIdentifierOfDid(SingletonTestData.baseWalletDID)}"
         return VerifiableCredentialDto(
-            id = "http://localhost:8080/api/credentials/status/${SingletonTestData.revocationListName}",
+            id = "https://example.com/api/credentials/status/${SingletonTestData.revocationListName}",
             context = listOf( "https://www.w3.org/2018/credentials/v1","https://w3id.org/vc/status-list/2021/v1"),
             type = listOf("VerifiableCredential", "StatusList2021Credential"),
             issuer = didOfIssuer,
             issuanceDate = "2022-09-01T11:59:00Z",
             credentialSubject = mapOf(
-                "id" to "http://localhost:8080/api/credentials/status/${SingletonTestData.revocationListName}#list",
+                "id" to "https://example.com/api/credentials/status/${SingletonTestData.revocationListName}#list",
                 "type" to "StatusList2021",
                 "statusPurpose" to "revocation",
                 "encodedList" to SingletonTestData.encodedList

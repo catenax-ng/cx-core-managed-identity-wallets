@@ -222,7 +222,8 @@ class CredentialsTest {
                 issuanceDate = "2019-06-16T18:56:59Z",
                 expirationDate = "2019-06-17T18:56:59Z",
                 credentialSubject = mapOf("college" to "Test-University"),
-                holderIdentifier = walletDto.did
+                holderIdentifier = walletDto.did,
+                isRevocable = true
             )
             SingletonTestData.baseWalletVerKey = walletDto.verKey!!
             SingletonTestData.baseWalletDID = walletDto.did
@@ -392,7 +393,7 @@ class CredentialsTest {
                 assertEquals(HttpStatusCode.Created, response.status())
             }
 
-            handleRequest(HttpMethod.Post, "/api/credentials?isRevocable=false") {
+            handleRequest(HttpMethod.Post, "/api/credentials") {
                 addHeader(HttpHeaders.Authorization, "Bearer ${EnvironmentTestSetup.UPDATE_TOKEN}")
                 addHeader(HttpHeaders.Accept, ContentType.Application.Json.toString())
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -485,15 +486,26 @@ class CredentialsTest {
             }.apply {
                 assertEquals(HttpStatusCode.Created, response.status())
             }
-
-            handleRequest(HttpMethod.Post, "/api/credentials/issuer?isRevocable=false") {
+            val verifiableCredentialRequestIrrevocable = VerifiableCredentialRequestWithoutIssuerDto(
+                context = listOf(
+                    JsonLdContexts.JSONLD_CONTEXT_W3C_2018_CREDENTIALS_V1,
+                    JsonLdContexts.JSONLD_CONTEXT_W3C_2018_CREDENTIALS_EXAMPLES_V1
+                ),
+                id = "http://example.edu/credentials/3732",
+                type = listOf("University-Degree-Credential, VerifiableCredential"),
+                issuanceDate = "2019-06-16T18:56:59Z",
+                expirationDate = "2019-06-17T18:56:59Z",
+                credentialSubject = mapOf("college" to "Test-University"),
+                holderIdentifier = walletDto.did
+            )
+            handleRequest(HttpMethod.Post, "/api/credentials/issuer") {
                 addHeader(HttpHeaders.Authorization, "Bearer ${EnvironmentTestSetup.UPDATE_TOKEN}")
                 addHeader(HttpHeaders.Accept, ContentType.Application.Json.toString())
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(
                     Json.encodeToString(
                         VerifiableCredentialRequestWithoutIssuerDto.serializer(),
-                        verifiableCredentialRequest))
+                        verifiableCredentialRequestIrrevocable))
             }.apply {
                 assertEquals(HttpStatusCode.Created, response.status())
             }
@@ -547,11 +559,11 @@ class CredentialsTest {
                     expirationDate = "2019-06-17T18:56:59Z",
                     credentialSubject = mapOf("college" to "Test-University", "id" to walletDto.did),
                     credentialStatus = CredentialStatus(
-                        statusId = "http://localhost:8080/api/credentials/status/${SingletonTestData.revocationListName}#${SingletonTestData.credentialIndex}",
+                        statusId = "https://example.com/api/credentials/status/${SingletonTestData.revocationListName}#${SingletonTestData.credentialIndex}",
                         credentialType = "StatusList2021Entry",
                         statusPurpose = "revocation",
                         index = SingletonTestData.credentialIndex.toString(),
-                        listUrl = "http://localhost:8080/api/credentials/status/${SingletonTestData.revocationListName}"
+                        listUrl = "https://example.com/api/credentials/status/${SingletonTestData.revocationListName}"
                     ),
                     proof = LdProofDto(
                         type = "Ed25519Signature2018",
@@ -619,11 +631,11 @@ class CredentialsTest {
                     expirationDate = "2019-06-17T18:56:59Z",
                     credentialSubject = mapOf("college" to "Test-University", "id" to walletDto.did),
                     credentialStatus = CredentialStatus(
-                        statusId = "http://localhost:8080/api/credentials/status/${SingletonTestData.revocationListName}#${SingletonTestData.credentialIndex}",
+                        statusId = "https://example.com/api/credentials/status/${SingletonTestData.revocationListName}#${SingletonTestData.credentialIndex}",
                         credentialType = "Wrong-status-type",
                         statusPurpose = "revocation",
                         index = "-1",
-                        listUrl = "http://localhost:8080/api/credentials/status/${SingletonTestData.revocationListName}"
+                        listUrl = "https://example.com/api/credentials/status/${SingletonTestData.revocationListName}"
                     ),
                     proof = LdProofDto(
                         type = "Ed25519Signature2018",
@@ -659,11 +671,11 @@ class CredentialsTest {
                     expirationDate = "2019-06-17T18:56:59Z",
                     credentialSubject = mapOf("college" to "Test-University", "id" to walletDto.did),
                     credentialStatus = CredentialStatus(
-                        statusId = "http://localhost:8080/api/credentials/status/${SingletonTestData.revocationListName}#${SingletonTestData.credentialIndex}",
+                        statusId = "https://example.com/api/credentials/status/${SingletonTestData.revocationListName}#${SingletonTestData.credentialIndex}",
                         credentialType = "StatusList2021Entry",
                         statusPurpose = "wrong-purpose",
                         index = "1",
-                        listUrl = "http://localhost:8080/api/credentials/status/${SingletonTestData.revocationListName}"
+                        listUrl = "https://example.com/api/credentials/status/${SingletonTestData.revocationListName}"
                     ),
                     proof = LdProofDto(
                         type = "Ed25519Signature2018",
@@ -699,11 +711,11 @@ class CredentialsTest {
                     expirationDate = "2019-06-17T18:56:59Z",
                     credentialSubject = mapOf("college" to "Test-University", "id" to walletDto.did),
                     credentialStatus = CredentialStatus(
-                        statusId = "http://localhost:8080/api/credentials/status/${SingletonTestData.revocationListName}#${SingletonTestData.credentialIndex}",
+                        statusId = "https://example.com/api/credentials/status/${SingletonTestData.revocationListName}#${SingletonTestData.credentialIndex}",
                         credentialType = "StatusList2021Entry",
                         statusPurpose = "revocation",
                         index = "-1",
-                        listUrl = "http://localhost:8080/api/credentials/status/${SingletonTestData.revocationListName}"
+                        listUrl = "https://example.com/api/credentials/status/${SingletonTestData.revocationListName}"
                     ),
                     proof = LdProofDto(
                         type = "Ed25519Signature2018",
@@ -739,7 +751,7 @@ class CredentialsTest {
                     expirationDate = "2019-06-17T18:56:59Z",
                     credentialSubject = mapOf("college" to "Test-University", "id" to walletDto.did),
                     credentialStatus = CredentialStatus(
-                        statusId = "http://localhost:8080/api/credentials/status/${SingletonTestData.revocationListName}#${SingletonTestData.credentialIndex}",
+                        statusId = "https://example.com/api/credentials/status/${SingletonTestData.revocationListName}#${SingletonTestData.credentialIndex}",
                         credentialType = "StatusList2021Entry",
                         statusPurpose = "revocation",
                         index = "3",
@@ -778,7 +790,7 @@ class CredentialsTest {
                     expirationDate = "2019-06-17T18:56:59Z",
                     credentialSubject = mapOf("college" to "Test-University", "id" to walletDto.did),
                     credentialStatus = CredentialStatus(
-                        statusId = "http://localhost:8080/api/credentials/status/${SingletonTestData.revocationListName}#${SingletonTestData.credentialIndex}",
+                        statusId = "https://example.com/api/credentials/status/${SingletonTestData.revocationListName}#${SingletonTestData.credentialIndex}",
                         credentialType = "StatusList2021Entry",
                         statusPurpose = "revocation",
                         index = "  ",
@@ -938,7 +950,7 @@ class CredentialsTest {
                 assertEquals(HttpStatusCode.OK, response.status())
                 val credential = Json.decodeFromString(VerifiableCredentialDto.serializer(), response.content!!)
                 assertEquals(
-                    "http://localhost:8080/api/credentials/status/${SingletonTestData.revocationListName}#list",
+                    "https://example.com/api/credentials/status/${SingletonTestData.revocationListName}#list",
                     credential.credentialSubject["id"]
                 )
             }
