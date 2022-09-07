@@ -671,10 +671,12 @@ class AcaPyWalletServiceImpl(
 
         validateVerifiableCredential(vc, withDateValidation = false, withRevocationCheck = false, walletOfIssuer.walletToken)
 
+        val profileName = utilsService.getIdentifierOfDid(walletOfIssuer.did)
         revocationService.revoke(
-            profileName = utilsService.getIdentifierOfDid(walletOfIssuer.did),
+            profileName = profileName,
             indexOfCredential = vc.credentialStatus.index.toLong()
         )
+        revocationService.issueStatusListCredentials(profileName, true)
     }
 
     private fun verifyPropertiesOfCredentialStatus(

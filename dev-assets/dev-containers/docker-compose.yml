@@ -65,7 +65,7 @@ services:
     ]
 
   cx_revocation_service:
-    image: registry.gitlab.com/gaia-x/data-infrastructure-federation-services/not/notarization-service/revocation:java17-latest
+    image: registry.gitlab.com/gaia-x/data-infrastructure-federation-services/not/notarization-service/revocation:1.0.0-SNAPSHOT-quarkus-2.10.2.Final-java17
     container_name: cx_revocation_service
     ports:
       - "8086:8086"

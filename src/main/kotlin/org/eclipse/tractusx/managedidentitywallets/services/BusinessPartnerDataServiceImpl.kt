@@ -449,7 +449,7 @@ class BusinessPartnerDataServiceImpl(private val walletService: IWalletService,
                 "bpn" to bpn
             ),
             holderIdentifier = bpn,
-            isRevocable = true
+            isRevocable = false // THE BPN Credential is not Revocable!
         )
     }
 

@@ -25,6 +25,8 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import org.eclipse.tractusx.managedidentitywallets.models.NotFoundException
+import org.eclipse.tractusx.managedidentitywallets.models.UnprocessableEntityException
 import org.eclipse.tractusx.managedidentitywallets.models.ssi.CredentialStatus
 import org.eclipse.tractusx.managedidentitywallets.models.ssi.VerifiableCredentialDto
 
@@ -55,12 +57,19 @@ class RevocationServiceImpl(
     }
 
     override suspend fun getStatusListCredentialOfUrl(statusListUrl: String): VerifiableCredentialDto {
-        val httpResponse: HttpResponse = client.get {
-            url(statusListUrl)
-            accept(ContentType.Application.Json)
-            contentType(ContentType.Application.Json)
+        return try {
+            val httpResponse: HttpResponse = client.get {
+                url(statusListUrl)
+                accept(ContentType.Application.Json)
+                contentType(ContentType.Application.Json)
+            }
+            Json.decodeFromString(httpResponse.readText())
+        } catch (e: Exception) {
+            if (!e.message.isNullOrBlank() && e.message!!.contains("404 Not Found")) {
+                throw NotFoundException("The StatusList credential is not found!")
+            }
+            throw UnprocessableEntityException("The StatusList credential is not available due to the Error: ${e.message}")
         }
-        return Json.decodeFromString(httpResponse.readText())
     }
 
     override suspend fun revoke(profileName: String, indexOfCredential: Long) {
