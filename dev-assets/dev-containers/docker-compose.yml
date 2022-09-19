@@ -24,7 +24,6 @@ services:
       - ./keycloak/catenax-realm.json:/tmp/catenax-realm.json
     ports:
       - "8081:8080"
-
   cx_acapy:
     image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.4
     container_name: cx_acapy

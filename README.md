@@ -509,3 +509,6 @@ within the `Persistence.kt` database setup:
 ```
 SchemaUtils.createMissingTablesAndColumns(Companies, Wallets, VerifiableCredentials)
 ```
+
+## Local Deployment for Test purposes with Helm
+
