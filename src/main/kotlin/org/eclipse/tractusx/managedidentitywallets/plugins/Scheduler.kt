@@ -54,7 +54,7 @@ fun Application.configureJobs() {
 
     val scheduler: Scheduler = Scheduler
         .create(initDatabase(jdbcUrl))
-        //TODO replace after fixing the Business Partner Data
+        //TODO: replace after fixing the Business Partner Data requests
         //.startTasks(bpdmUpdate, updateRevocationList)
         .startTasks(updateRevocationList)
         .pollingInterval(Duration.ofHours(1))
