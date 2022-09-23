@@ -4,7 +4,6 @@ image:
 allowEmptyPassword: "\"yes\""
 db:
   jdbcDriver: "org.postgresql.Driver"
-namespace: "managed-identity-wallets"
 logging:
   exposed: "INFO"
 wallet:
@@ -16,7 +15,19 @@ acapy:
   label: "CatenaXIssuer"
   logLevel: "INFO"
   networkIdentifier: "idunion:test"
-  databaseHost: "managed-identity-wallets-local-postgresql.managed-identity-wallets.svc.cluster.local" #"managed-identity-wallets-local-postgresql" #"localhost" #product-managed-identity-wallets-acapypostgresql
+  databaseHost: "managed-identity-wallets-local-postgresql" #"managed-identity-wallets-local-postgresql" #"localhost" #product-managed-identity-wallets-acapypostgresql
+datapool:
+  grantType: "client_credentials"
+  scope: "openid"
+  refreshHour: "23"
+app:
+  version: "0.4.0"
+isLocal: true
+
+
+##################################################################
+# PostgreSQL Helm Chart Values
+##################################################################
 postgresql:
   enabled: true
   auth:
@@ -258,11 +269,12 @@ postgresql:
       --
       -- PostgreSQL database dump complete
       --
-datapool:
-  grantType: "client_credentials"
-  scope: "openid"
-  refreshHour: "23"
+
+##################################################################
+# Keycloak Helm Chart Values
+##################################################################
 cxkeycloak:
+  enabled: true
   service:
     type: ClusterIP
   fullnameOverride: catenax-keycloak
@@ -270,43 +282,15 @@ cxkeycloak:
     adminUser: admin
     adminPassword: catena
   postgresql:
-    enabled: true
-    #host: "jdbc:postgresql://managed-identity-wallets-local-postgresql"
-    #port: 5432
-    auth:
-      username: postgres
-      database: bitnami_keycloak
-      postgresPassword: "cx-password"
-      existingSecret: "catenax-managed-identity-wallets-postgresql"
+    enabled: false
+  externalDatabase:
+    host: "managed-identity-wallets-local-postgresql"
+    port: 5432
+    user: postgres
+    database: bitnami_keycloak
+    password: "cx-password"
   keycloakConfigCli:
     enabled: true
-    ## Bitnami keycloak-config-cli image
-    ## ref: https://hub.docker.com/r/bitnami/keycloak-config-cli/tags/
-    ## @param keycloakConfigCli.image.registry keycloak-config-cli container image registry
-    ## @param keycloakConfigCli.image.repository keycloak-config-cli container image repository
-    ## @param keycloakConfigCli.image.tag keycloak-config-cli container image tag
-    ## @param keycloakConfigCli.image.digest keycloak-config-cli container image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
-    ## @param keycloakConfigCli.image.pullPolicy keycloak-config-cli container image pull policy
-    ## @param keycloakConfigCli.image.pullSecrets keycloak-config-cli container image pull secrets
-    ##
-    image:
-      registry: docker.io
-      repository: bitnami/keycloak-config-cli
-      tag: 5.3.1-debian-11-r14
-      digest: ""
-      ## Specify a imagePullPolicy
-      ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
-      ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
-      ##
-      pullPolicy: IfNotPresent
-      ## Optionally specify an array of imagePullSecrets.
-      ## Secrets must be manually created in the namespace.
-      ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-      ## e.g:
-      ## pullSecrets:
-      ##   - myRegistryKeySecretName
-      ##
-      pullSecrets: [ ]
     configuration:
       realm1.json: |
         {
@@ -2663,8 +2647,3 @@ cxkeycloak:
             "policies": []
           }
         }
-ports:
-  - "8081:8080"
-app:
-  version: "0.4.0"
-isLocal: true

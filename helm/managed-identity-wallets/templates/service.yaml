@@ -8,7 +8,5 @@ spec:
   ports:
     - port: 8080
       name: miwport
-    - port: 11000
-      name: acapyports
   selector:
     app: catenax-managed-identity-wallets
