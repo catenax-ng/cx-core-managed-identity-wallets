@@ -1,6 +1,8 @@
 For the Creation of Local secrets, just run the following commands:
 
 Secret Name: catenax-managed-identity-wallets-secrets
+
+TODO Ändern des hosts in Localhost
 ```bash
 kubectl -n managed-identity-wallets create secret generic catenax-managed-identity-wallets-secrets \
   --from-literal=cx-db-jdbc-url='jdbc:postgresql://managed-identity-wallets-local-postgresql:5432/postgres?user=postgres&password=cx-password' \
@@ -26,9 +28,9 @@ kubectl -n managed-identity-wallets create secret generic catenax-managed-identi
   --from-literal=acapy-agent-wallet-seed='00000000000000000000000111111119' \
   --from-literal=acapy-jwt-secret='jwtSecret19' \
   --from-literal=acapy-db-account='postgres' \
-  --from-literal=acapy-db-password='cx_password' \
+  --from-literal=acapy-db-password='cx-password' \
   --from-literal=acapy-db-admin='postgres' \
-  --from-literal=acapy-db-admin-password='cx_password' \
+  --from-literal=acapy-db-admin-password='cx-password' \
   --from-literal=acapy-admin-api-key='Hj23iQUsstG!dde'
 ```
 

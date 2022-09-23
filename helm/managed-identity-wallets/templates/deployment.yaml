@@ -104,60 +104,60 @@ spec:
         - name: catenax-acapy
           image: {{ .Values.acapy.imageName }}:{{ .Values.acapy.tag }}
           env:
-            - name: WALLET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: catenax-managed-identity-wallets-acapy-secrets
-                  key: acapy-wallet-key
-            - name: AGENT_WALLET_SEED
-              valueFrom:
-                secretKeyRef:
-                  name: catenax-managed-identity-wallets-acapy-secrets
-                  key: acapy-agent-wallet-seed
-            - name: LEDGER_URL
-              value: {{ .Values.acapy.ledgerUrl }}
-            - name: LABEL
-              value: {{ .Values.acapy.label }}
-            - name: JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: catenax-managed-identity-wallets-acapy-secrets
-                  key: acapy-jwt-secret
-            - name: ACAPY_ADMIN_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: catenax-managed-identity-wallets-acapy-secrets
-                  key: acapy-admin-api-key
-            - name: LOG_LEVEL
-              value: {{ .Values.acapy.logLevel }}
-            - name: ACAPY_ENDPOINT_PORT
-              value: {{ .Values.acapy.endpointPort | quote }}
-            - name: ACAPY_ENDPOINT_URL
-              value: {{ .Values.acapy.endpointUrl }}
-            - name: ACAPY_ADMIN_PORT
-              value: {{ .Values.acapy.adminPort | quote }}
-            - name: DB_HOST
-              value: {{ .Values.acapy.databaseHost }}
-            - name: DB_ACCOUNT
-              valueFrom:
-                secretKeyRef:
-                  name: catenax-managed-identity-wallets-acapy-secrets
-                  key: acapy-db-account
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: catenax-managed-identity-wallets-acapy-secrets
-                  key: acapy-db-password
-            - name: DB_ADMIN_USER
-              valueFrom:
-                secretKeyRef:
-                  name: catenax-managed-identity-wallets-acapy-secrets
-                  key: acapy-db-admin
-            - name: DB_ADMIN_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: catenax-managed-identity-wallets-acapy-secrets
-                  key: acapy-db-admin-password
+          - name: WALLET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: catenax-managed-identity-wallets-acapy-secrets
+                key: acapy-wallet-key
+          - name: AGENT_WALLET_SEED
+            valueFrom:
+              secretKeyRef:
+                name: catenax-managed-identity-wallets-acapy-secrets
+                key: acapy-agent-wallet-seed
+          - name: LEDGER_URL
+            value: {{ .Values.acapy.ledgerUrl }}
+          - name: LABEL
+            value: {{ .Values.acapy.label }}
+          - name: JWT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: catenax-managed-identity-wallets-acapy-secrets
+                key: acapy-jwt-secret
+          - name: ACAPY_ADMIN_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: catenax-managed-identity-wallets-acapy-secrets
+                key: acapy-admin-api-key
+          - name: LOG_LEVEL
+            value: {{ .Values.acapy.logLevel }}
+          - name: ACAPY_ENDPOINT_PORT
+            value: {{ .Values.acapy.endpointPort | quote }}
+          - name: ACAPY_ENDPOINT_URL
+            value: {{ .Values.acapy.endpointUrl }}
+          - name: ACAPY_ADMIN_PORT
+            value: {{ .Values.acapy.adminPort | quote }}
+          - name: DB_HOST
+            value: {{ .Values.acapy.databaseHost }}
+          - name: DB_ACCOUNT
+            valueFrom:
+              secretKeyRef:
+                name: catenax-managed-identity-wallets-acapy-secrets
+                key: acapy-db-account
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: catenax-managed-identity-wallets-acapy-secrets
+                key: acapy-db-password
+          - name: DB_ADMIN_USER
+            valueFrom:
+              secretKeyRef:
+                name: catenax-managed-identity-wallets-acapy-secrets
+                key: acapy-db-admin
+          - name: DB_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: catenax-managed-identity-wallets-acapy-secrets
+                key: acapy-db-admin-password
           resources:
             requests:
               cpu: 100m
@@ -188,7 +188,6 @@ spec:
           --multitenant-admin \
           --log-level $(LOG_LEVEL)"
           ]
-
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress

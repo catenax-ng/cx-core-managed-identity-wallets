@@ -16,21 +16,256 @@ acapy:
   label: "CatenaXIssuer"
   logLevel: "INFO"
   networkIdentifier: "idunion:test"
-  databaseHost: "managed-identity-wallets-local-acapypostgresql" #"localhost" #product-managed-identity-wallets-acapypostgresql
-acapypostgresql:
-  enabled: true
-  auth:
-    existingSecret: "catenax-managed-identity-wallets-acapy-postgresql"
-  # postgresPassword: "cx-password" #catenax-managed-identity-wallets-acapy-postgresql
+  databaseHost: "managed-identity-wallets-local-postgresql.managed-identity-wallets.svc.cluster.local" #"managed-identity-wallets-local-postgresql" #"localhost" #product-managed-identity-wallets-acapypostgresql
 postgresql:
   enabled: true
   auth:
     existingSecret: "catenax-managed-identity-wallets-postgresql"
+  initdb:
+    init.sql: |
+      CREATE DATABASE bitnami_keycloak OWNER "postgres";
+      --
+      -- PostgreSQL database dump
+      --
+
+      -- Dumped from database version 14.5
+      -- Dumped by pg_dump version 14.5
+
+      SET statement_timeout = 0;
+      SET lock_timeout = 0;
+      SET idle_in_transaction_session_timeout = 0;
+      SET client_encoding = 'UTF8';
+      SET standard_conforming_strings = on;
+      SELECT pg_catalog.set_config('search_path', '', false);
+      SET check_function_bodies = false;
+      SET xmloption = content;
+      SET client_min_messages = warning;
+      SET row_security = off;
+
+      SET default_tablespace = '';
+
+      SET default_table_access_method = heap;
+
+      --
+      -- Name: scheduled_tasks; Type: TABLE; Schema: public; Owner: -
+      --
+
+      CREATE TABLE public.scheduled_tasks (
+          task_name text NOT NULL,
+          task_instance text NOT NULL,
+          task_data bytea,
+          execution_time timestamp without time zone NOT NULL,
+          picked boolean NOT NULL,
+          picked_by text,
+          last_success timestamp without time zone,
+          last_failure timestamp without time zone,
+          consecutive_failures integer,
+          last_heartbeat timestamp without time zone,
+          version bigint NOT NULL
+      );
+
+
+      --
+      -- Name: verifiable_credentials; Type: TABLE; Schema: public; Owner: -
+      --
+
+      CREATE TABLE public.verifiable_credentials (
+          id integer NOT NULL,
+          content text NOT NULL,
+          credential_id character varying(4096),
+          issuer_did character varying(4096) NOT NULL,
+          holder_did character varying(4096) NOT NULL,
+          type character varying(4096) NOT NULL,
+          wallet_id integer NOT NULL
+      );
+
+
+      --
+      -- Name: verifiable_credentials_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+      --
+
+      CREATE SEQUENCE public.verifiable_credentials_id_seq
+          AS integer
+          START WITH 1
+          INCREMENT BY 1
+          NO MINVALUE
+          NO MAXVALUE
+          CACHE 1;
+
+
+      --
+      -- Name: verifiable_credentials_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+      --
+
+      ALTER SEQUENCE public.verifiable_credentials_id_seq OWNED BY public.verifiable_credentials.id;
+
+
+      --
+      -- Name: wallets; Type: TABLE; Schema: public; Owner: -
+      --
+
+      CREATE TABLE public.wallets (
+          id integer NOT NULL,
+          created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+          modified_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+          name character varying(127) NOT NULL,
+          bpn character varying(36) NOT NULL,
+          did character varying(4096) NOT NULL,
+          wallet_id character varying(4096) NOT NULL,
+          wallet_key character varying(4096) NOT NULL,
+          wallet_token character varying(4096) NOT NULL
+      );
+
+
+      --
+      -- Name: wallets_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+      --
+
+      CREATE SEQUENCE public.wallets_id_seq
+          AS integer
+          START WITH 1
+          INCREMENT BY 1
+          NO MINVALUE
+          NO MAXVALUE
+          CACHE 1;
+
+
+      --
+      -- Name: wallets_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+      --
+
+      ALTER SEQUENCE public.wallets_id_seq OWNED BY public.wallets.id;
+
+
+      --
+      -- Name: verifiable_credentials id; Type: DEFAULT; Schema: public; Owner: -
+      --
+
+      ALTER TABLE ONLY public.verifiable_credentials ALTER COLUMN id SET DEFAULT nextval('public.verifiable_credentials_id_seq'::regclass);
+
+
+      --
+      -- Name: wallets id; Type: DEFAULT; Schema: public; Owner: -
+      --
+
+      ALTER TABLE ONLY public.wallets ALTER COLUMN id SET DEFAULT nextval('public.wallets_id_seq'::regclass);
+
+
+      --
+      -- Data for Name: scheduled_tasks; Type: TABLE DATA; Schema: public; Owner: -
+      --
+
+      INSERT INTO public.scheduled_tasks VALUES ('bpdm-update', 'recurring', NULL, '2022-09-21 23:00:00', false, NULL, NULL, '2022-09-21 05:34:13.558008', 3, NULL, 7);
+
+
+      --
+      -- Data for Name: verifiable_credentials; Type: TABLE DATA; Schema: public; Owner: -
+      --
+
+      INSERT INTO public.verifiable_credentials VALUES (3, '{"id":"dbca48d3-32e5-484e-87b1-f55d8ae370bf","@context":["https://www.w3.org/2018/credentials/v1","https://raw.githubusercontent.com/catenax-ng/product-core-schemas/main/businessPartnerData"],"type":["BpnCredential","VerifiableCredential"],"issuer":"did:indy:idunion:test:VJWhEnXH9WaaknYVQqC9vz","issuanceDate":"2022-09-21T16:26:59Z","credentialSubject":{"type":["BpnCredential"],"bpn":"BPNL000000000002","id":"did:indy:idunion:test:KWZfFpx7eVMtP1ScyLiRrh"},"proof":{"type":"Ed25519Signature2018","created":"2022-09-21T16:27:00Z","proofPurpose":"assertionMethod","verificationMethod":"did:indy:idunion:test:VJWhEnXH9WaaknYVQqC9vz#key-1","jws":"eyJhbGciOiAiRWREU0EiLCAiYjY0IjogZmFsc2UsICJjcml0IjogWyJiNjQiXX0..2Ww7Kr8DkN3jqDOfcW14Ar2SHPbU6KFdKxDA-4BCtEGtjiBOp53OHkI2tQwkWvRxtJeomqL0onNQE9fXXHZ8Cw"}}', 'dbca48d3-32e5-484e-87b1-f55d8ae370bf', 'did:indy:idunion:test:VJWhEnXH9WaaknYVQqC9vz', 'did:indy:idunion:test:KWZfFpx7eVMtP1ScyLiRrh', 'BpnCredential', 3);
+      INSERT INTO public.verifiable_credentials VALUES (4, '{"id":"72c242c4-003d-44e0-b0ee-08583185153b","@context":["https://www.w3.org/2018/credentials/v1","https://raw.githubusercontent.com/catenax-ng/product-core-schemas/main/businessPartnerData"],"type":["MembershipCredential","VerifiableCredential"],"issuer":"did:indy:idunion:test:VJWhEnXH9WaaknYVQqC9vz","issuanceDate":"2022-09-21T16:26:59Z","credentialSubject":{"type":["MembershipCredential"],"memberOf":"Catena-X","status":"Active","startTime":"2022-09-21T16:26:59Z","id":"did:indy:idunion:test:KWZfFpx7eVMtP1ScyLiRrh"},"proof":{"type":"Ed25519Signature2018","created":"2022-09-21T16:27:01Z","proofPurpose":"assertionMethod","verificationMethod":"did:indy:idunion:test:VJWhEnXH9WaaknYVQqC9vz#key-1","jws":"eyJhbGciOiAiRWREU0EiLCAiYjY0IjogZmFsc2UsICJjcml0IjogWyJiNjQiXX0..dJc9BpPY2fk8HI3wtC_wOtdRMKAGRMp-zkX0Gn66p6PzfsAc651MrUjqFdJJkWkRoVePpalRIsbazWK2tsx4AA"}}', '72c242c4-003d-44e0-b0ee-08583185153b', 'did:indy:idunion:test:VJWhEnXH9WaaknYVQqC9vz', 'did:indy:idunion:test:KWZfFpx7eVMtP1ScyLiRrh', 'MembershipCredential', 3);
+      INSERT INTO public.verifiable_credentials VALUES (5, '{"id":"b2d2944e-d8aa-4ad6-aff1-7128873e8320","@context":["https://www.w3.org/2018/credentials/v1","https://raw.githubusercontent.com/catenax-ng/product-core-schemas/main/businessPartnerData"],"type":["BpnCredential","VerifiableCredential"],"issuer":"did:indy:idunion:test:VJWhEnXH9WaaknYVQqC9vz","issuanceDate":"2022-09-21T16:28:11Z","credentialSubject":{"type":["BpnCredential"],"bpn":"BPNL000000000001","id":"did:indy:idunion:test:TJrRvb68qHjkdNxbjXRVVv"},"proof":{"type":"Ed25519Signature2018","created":"2022-09-21T16:28:12Z","proofPurpose":"assertionMethod","verificationMethod":"did:indy:idunion:test:VJWhEnXH9WaaknYVQqC9vz#key-1","jws":"eyJhbGciOiAiRWREU0EiLCAiYjY0IjogZmFsc2UsICJjcml0IjogWyJiNjQiXX0..H5oCdymcn3-U_glHTOJNpW-VJG2z5yL-3148RQcU5vjCNY7Z63_NccsQ0QxtGNhOmPrjvvseogk-CxoUNgKtCA"}}', 'b2d2944e-d8aa-4ad6-aff1-7128873e8320', 'did:indy:idunion:test:VJWhEnXH9WaaknYVQqC9vz', 'did:indy:idunion:test:TJrRvb68qHjkdNxbjXRVVv', 'BpnCredential', 4);
+      INSERT INTO public.verifiable_credentials VALUES (6, '{"id":"418b319a-4f3b-4255-b4c0-d09d523bfab4","@context":["https://www.w3.org/2018/credentials/v1","https://raw.githubusercontent.com/catenax-ng/product-core-schemas/main/businessPartnerData"],"type":["MembershipCredential","VerifiableCredential"],"issuer":"did:indy:idunion:test:VJWhEnXH9WaaknYVQqC9vz","issuanceDate":"2022-09-21T16:28:11Z","credentialSubject":{"type":["MembershipCredential"],"memberOf":"Catena-X","status":"Active","startTime":"2022-09-21T16:28:11Z","id":"did:indy:idunion:test:TJrRvb68qHjkdNxbjXRVVv"},"proof":{"type":"Ed25519Signature2018","created":"2022-09-21T16:28:12Z","proofPurpose":"assertionMethod","verificationMethod":"did:indy:idunion:test:VJWhEnXH9WaaknYVQqC9vz#key-1","jws":"eyJhbGciOiAiRWREU0EiLCAiYjY0IjogZmFsc2UsICJjcml0IjogWyJiNjQiXX0..pDMhebAihgbR20llHUkpJTnYBG__TeV89aE9VioEEsVzH5Mb2ZyylIsNSPPAyLEiQFzBk1yakGvEjugTej0ZDw"}}', '418b319a-4f3b-4255-b4c0-d09d523bfab4', 'did:indy:idunion:test:VJWhEnXH9WaaknYVQqC9vz', 'did:indy:idunion:test:TJrRvb68qHjkdNxbjXRVVv', 'MembershipCredential', 4);
+
+
+      --
+      -- Data for Name: wallets; Type: TABLE DATA; Schema: public; Owner: -
+      --
+
+      INSERT INTO public.wallets VALUES (1, '2022-09-21 13:21:18.655369', '2022-09-21 13:21:19.06398', 'Base Wallet', 'BPNL000000000000', 'did:indy:idunion:test:VJWhEnXH9WaaknYVQqC9vz', '36049512-3b42-4a08-9407-90baa6fea502', 'CpmdLwQWcvWJbe4xjiwuQO60h', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ3YWxsZXRfaWQiOiIzNjA0OTUxMi0zYjQyLTRhMDgtOTQwNy05MGJhYTZmZWE1MDIiLCJpYXQiOjE2NjM3NjY0Nzh9.9genNAw7j1frjVPiw8SwQIbHYKpAF6MaXJjW818GQUc');
+      INSERT INTO public.wallets VALUES (3, '2022-09-21 16:26:59.70727', '2022-09-21 16:26:59.757868', 'BMW-Wallet', 'BPNL000000000002', 'did:indy:idunion:test:KWZfFpx7eVMtP1ScyLiRrh', 'bfafb839-8acf-4e0d-9fc6-df8ad4eee1b9', 'KTQs2T8PK33wRwma9sMpGY9uF', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ3YWxsZXRfaWQiOiJiZmFmYjgzOS04YWNmLTRlMGQtOWZjNi1kZjhhZDRlZWUxYjkiLCJpYXQiOjE2NjM3Nzc2MTh9.YIDAUCgYoU_73INQaFLlgBbFRMEPCfggEaSQIoO8QwQ');
+      INSERT INTO public.wallets VALUES (4, '2022-09-21 16:28:11.070908', '2022-09-21 16:28:11.153966', 'ZF-Wallet', 'BPNL000000000001', 'did:indy:idunion:test:TJrRvb68qHjkdNxbjXRVVv', 'a5e68ede-846a-4e84-870d-c3f9e7c4d885', 'dr3tkKjc0YrXWHD1tqvsjJWhL', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ3YWxsZXRfaWQiOiJhNWU2OGVkZS04NDZhLTRlODQtODcwZC1jM2Y5ZTdjNGQ4ODUiLCJpYXQiOjE2NjM3Nzc2OTB9.ZGKsxoVTM--NKXP_CFxgd9vcg96gNW_dLJgxPp0KA60');
+
+
+      --
+      -- Name: verifiable_credentials_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+      --
+
+      SELECT pg_catalog.setval('public.verifiable_credentials_id_seq', 6, true);
+
+
+      --
+      -- Name: wallets_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+      --
+
+      SELECT pg_catalog.setval('public.wallets_id_seq', 4, true);
+
+
+      --
+      -- Name: wallets bpn; Type: CONSTRAINT; Schema: public; Owner: -
+      --
+
+      ALTER TABLE ONLY public.wallets
+          ADD CONSTRAINT bpn UNIQUE (bpn);
+
+
+      --
+      -- Name: verifiable_credentials content; Type: CONSTRAINT; Schema: public; Owner: -
+      --
+
+      ALTER TABLE ONLY public.verifiable_credentials
+          ADD CONSTRAINT content UNIQUE (content);
+
+
+      --
+      -- Name: verifiable_credentials credentialid; Type: CONSTRAINT; Schema: public; Owner: -
+      --
+
+      ALTER TABLE ONLY public.verifiable_credentials
+          ADD CONSTRAINT credentialid UNIQUE (credential_id);
+
+
+      --
+      -- Name: wallets did; Type: CONSTRAINT; Schema: public; Owner: -
+      --
+
+      ALTER TABLE ONLY public.wallets
+          ADD CONSTRAINT did UNIQUE (did);
+
+
+      --
+      -- Name: scheduled_tasks pk_scheduler_tasks; Type: CONSTRAINT; Schema: public; Owner: -
+      --
+
+      ALTER TABLE ONLY public.scheduled_tasks
+          ADD CONSTRAINT pk_scheduler_tasks PRIMARY KEY (task_name, task_instance);
+
+
+      --
+      -- Name: verifiable_credentials verifiable_credentials_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+      --
+
+      ALTER TABLE ONLY public.verifiable_credentials
+          ADD CONSTRAINT verifiable_credentials_pkey PRIMARY KEY (id);
+
+
+      --
+      -- Name: wallets wallets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+      --
+
+      ALTER TABLE ONLY public.wallets
+          ADD CONSTRAINT wallets_pkey PRIMARY KEY (id);
+
+
+      --
+      -- Name: verifiable_credentials fk_verifiable_credentials_wallet_id__id; Type: FK CONSTRAINT; Schema: public; Owner: -
+      --
+
+      ALTER TABLE ONLY public.verifiable_credentials
+          ADD CONSTRAINT fk_verifiable_credentials_wallet_id__id FOREIGN KEY (wallet_id) REFERENCES public.wallets(id) ON UPDATE RESTRICT ON DELETE RESTRICT;
+
+
+      --
+      -- PostgreSQL database dump complete
+      --
 datapool:
   grantType: "client_credentials"
   scope: "openid"
   refreshHour: "23"
 cxkeycloak:
+  service:
+    type: ClusterIP
+  fullnameOverride: catenax-keycloak
   auth:
     adminUser: admin
     adminPassword: catena
@@ -44,6 +279,34 @@ cxkeycloak:
       postgresPassword: "cx-password"
       existingSecret: "catenax-managed-identity-wallets-postgresql"
   keycloakConfigCli:
+    enabled: true
+    ## Bitnami keycloak-config-cli image
+    ## ref: https://hub.docker.com/r/bitnami/keycloak-config-cli/tags/
+    ## @param keycloakConfigCli.image.registry keycloak-config-cli container image registry
+    ## @param keycloakConfigCli.image.repository keycloak-config-cli container image repository
+    ## @param keycloakConfigCli.image.tag keycloak-config-cli container image tag
+    ## @param keycloakConfigCli.image.digest keycloak-config-cli container image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
+    ## @param keycloakConfigCli.image.pullPolicy keycloak-config-cli container image pull policy
+    ## @param keycloakConfigCli.image.pullSecrets keycloak-config-cli container image pull secrets
+    ##
+    image:
+      registry: docker.io
+      repository: bitnami/keycloak-config-cli
+      tag: 5.3.1-debian-11-r14
+      digest: ""
+      ## Specify a imagePullPolicy
+      ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+      ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+      ##
+      pullPolicy: IfNotPresent
+      ## Optionally specify an array of imagePullSecrets.
+      ## Secrets must be manually created in the namespace.
+      ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+      ## e.g:
+      ## pullSecrets:
+      ##   - myRegistryKeySecretName
+      ##
+      pullSecrets: [ ]
     configuration:
       realm1.json: |
         {
@@ -2401,7 +2664,7 @@ cxkeycloak:
           }
         }
 ports:
-      - "8081:8080"
+  - "8081:8080"
 app:
   version: "0.4.0"
 isLocal: true
