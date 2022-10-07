@@ -34,6 +34,11 @@ kubectl -n managed-identity-wallets create secret generic catenax-managed-identi
   --from-literal=acapy-admin-api-key='Hj23iQUsstG!dde'
 ```
 
+kubectl -n miw-test create secret generic catenax-managed-identity-wallets-postgresql \
+--from-literal=password='cx-password' \
+--from-literal=postgres-password='cx-password' \
+--from-literal=user='postgres'
+
 Secret Name: catenax-managed-identity-wallets-postgresql
 ```bash
 kubectl -n managed-identity-wallets create secret generic catenax-managed-identity-wallets-postgresql \
@@ -49,7 +54,6 @@ kubectl -n managed-identity-wallets create secret generic catenax-managed-identi
 --from-literal=postgres-password='cx-password' \
 --from-literal=user='postgres'
 ```
-
 
 After Setting up the Secrets and building the MIW - Image.
 
