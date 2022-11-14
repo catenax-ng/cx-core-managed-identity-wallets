@@ -49,13 +49,13 @@ services:
         --inbound-transport http '0.0.0.0' 8000 \
         --outbound-transport http \
         --admin '0.0.0.0' 11000 \
-        --wallet-name catenaX \
+        --wallet-name AcapyCatenaX \
         --wallet-type indy \
         --wallet-key issuerKeySecret19 \
         --wallet-storage-type postgres_storage
         --wallet-storage-config '{\"url\":\"cx_postgres:5432\",\"max_connections\":5}'
         --wallet-storage-creds '{\"account\":\"postgres\",\"password\":\"cx_password\",\"admin_account\":\"postgres\",\"admin_password\":\"cx_password\"}'
-        --seed 00000000000000000000000111111119 \
+        --seed 70010550038305040070100111510019 \
         --genesis-url http://dev.greenlight.bcovrin.vonx.io/genesis \
         --label CatenaXIssuer \
         --admin-api-key Hj23iQUsstG!dde \

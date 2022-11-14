@@ -60,7 +60,7 @@ interface IWebhookService {
                     }
                     install(Logging) {
                         logger = Logger.DEFAULT
-                        level = LogLevel.BODY
+                        level = LogLevel.ALL
                     }
                 }
             )

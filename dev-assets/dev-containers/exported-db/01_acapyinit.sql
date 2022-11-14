@@ -1,0 +1,333 @@
+    --
+    -- PostgreSQL database dump
+    --
+
+    -- Dumped from database version 14.2
+    -- Dumped by pg_dump version 15.0
+
+    SET statement_timeout = 0;
+    SET lock_timeout = 0;
+    SET idle_in_transaction_session_timeout = 0;
+    SET client_encoding = 'UTF8';
+    SET standard_conforming_strings = on;
+    SELECT pg_catalog.set_config('search_path', '', false);
+    SET check_function_bodies = false;
+    SET xmloption = content;
+    SET client_min_messages = warning;
+    SET row_security = off;
+
+    DROP DATABASE "AcapyCatenaX";
+    --
+    -- Name: AcapyCatenaX; Type: DATABASE; Schema: -; Owner: postgres
+    --
+
+    CREATE DATABASE "AcapyCatenaX" WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'en_US.utf8';
+
+
+    ALTER DATABASE "AcapyCatenaX" OWNER TO postgres;
+
+    \connect "AcapyCatenaX"
+
+    SET statement_timeout = 0;
+    SET lock_timeout = 0;
+    SET idle_in_transaction_session_timeout = 0;
+    SET client_encoding = 'UTF8';
+    SET standard_conforming_strings = on;
+    SELECT pg_catalog.set_config('search_path', '', false);
+    SET check_function_bodies = false;
+    SET xmloption = content;
+    SET client_min_messages = warning;
+    SET row_security = off;
+
+    --
+    -- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
+    --
+
+    -- *not* creating schema, since initdb creates it
+
+
+    ALTER SCHEMA public OWNER TO postgres;
+
+    SET default_tablespace = '';
+
+    SET default_table_access_method = heap;
+
+    --
+    -- Name: items; Type: TABLE; Schema: public; Owner: postgres
+    --
+
+    CREATE TABLE public.items (
+        id bigint NOT NULL,
+        type bytea NOT NULL,
+        name bytea NOT NULL,
+        value bytea NOT NULL,
+        key bytea NOT NULL
+    );
+
+
+    ALTER TABLE public.items OWNER TO postgres;
+
+    --
+    -- Name: items_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+    --
+
+    CREATE SEQUENCE public.items_id_seq
+        START WITH 1
+        INCREMENT BY 1
+        NO MINVALUE
+        NO MAXVALUE
+        CACHE 1;
+
+
+    ALTER TABLE public.items_id_seq OWNER TO postgres;
+
+    --
+    -- Name: items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+    --
+
+    ALTER SEQUENCE public.items_id_seq OWNED BY public.items.id;
+
+
+    --
+    -- Name: metadata; Type: TABLE; Schema: public; Owner: postgres
+    --
+
+    CREATE TABLE public.metadata (
+        id bigint NOT NULL,
+        value bytea NOT NULL
+    );
+
+
+    ALTER TABLE public.metadata OWNER TO postgres;
+
+    --
+    -- Name: metadata_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+    --
+
+    CREATE SEQUENCE public.metadata_id_seq
+        START WITH 1
+        INCREMENT BY 1
+        NO MINVALUE
+        NO MAXVALUE
+        CACHE 1;
+
+
+    ALTER TABLE public.metadata_id_seq OWNER TO postgres;
+
+    --
+    -- Name: metadata_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+    --
+
+    ALTER SEQUENCE public.metadata_id_seq OWNED BY public.metadata.id;
+
+
+    --
+    -- Name: tags_encrypted; Type: TABLE; Schema: public; Owner: postgres
+    --
+
+    CREATE TABLE public.tags_encrypted (
+        name bytea NOT NULL,
+        value bytea NOT NULL,
+        item_id bigint NOT NULL
+    );
+
+
+    ALTER TABLE public.tags_encrypted OWNER TO postgres;
+
+    --
+    -- Name: tags_plaintext; Type: TABLE; Schema: public; Owner: postgres
+    --
+
+    CREATE TABLE public.tags_plaintext (
+        name bytea NOT NULL,
+        value text NOT NULL,
+        item_id bigint NOT NULL
+    );
+
+
+    ALTER TABLE public.tags_plaintext OWNER TO postgres;
+
+    --
+    -- Name: items id; Type: DEFAULT; Schema: public; Owner: postgres
+    --
+
+    ALTER TABLE ONLY public.items ALTER COLUMN id SET DEFAULT nextval('public.items_id_seq'::regclass);
+
+
+    --
+    -- Name: metadata id; Type: DEFAULT; Schema: public; Owner: postgres
+    --
+
+    ALTER TABLE ONLY public.metadata ALTER COLUMN id SET DEFAULT nextval('public.metadata_id_seq'::regclass);
+
+
+    --
+    -- Data for Name: items; Type: TABLE DATA; Schema: public; Owner: postgres
+    --
+
+    INSERT INTO public.items (id, type, name, value, key) VALUES (1, '\x33493369446b62485333375334696134666c4948345979586633475a736e6b4169575a6d6f4d43666d764b317a6e3367484a73757045727366326b4b74673d3d', '\x776f2f346d6971444b537a6d326f536333582b2b7667734a376d416453436b374d785768622b6632634a646f394170776a52533757413d3d', '\xd41aacecec23adc772199aa0d48abbb5be8428afc2647a3c2a4256bba3b02c4f0eb1557f4d4740102c52cb734d088379fe67ddf2f345c0d2ba237ac7f5ce13c6873948b7cedd4298f74f03686e58aff6c3e2f5ce6ece305b02786fe43195b34f38dbbd998b000fa29c00b5f09d008a945fe729203c24d79f5081d23b', '\x43c27faecef359b7ed8503281103977cc0a14190788a6f0a818c58731712ba8a13117db661a6044e4044f09a4e8f7582d62bd6e7cd07fdee7b245de3');
+    INSERT INTO public.items (id, type, name, value, key) VALUES (3, '\x2b4f47354e747a64686f6b417a6944556272312f6f44757739744e346d4f6549596f4b59416b52476e564957566c385642413d3d', '\x4b4270714d50367a755876346439735a596b5a49514b4f44426755304175496738566e7959356d2b4e6b687332573633545863476f6c6b464f6e524f6642527077794d3d', '\xe362a7d884e370f3edf2ccd94b138f64e0c093e7991232403280d4f0f573e1f87d2cd43cae9fb36e9b0f9ce6e6290d7bf0f38d3e5883cb37cd564d915b55f6839f694f6b1976803e55030f2c2e20ee1b5067fca4977396075ec865512390798103615a67263370e2f3bf95c3758d7cb7b279b685', '\x53130ba213cec0a905bb0e6b7b7117c0a0a8d870916a8367b4840f86551636f6ea3d7b6bc43f86fad01a71e126d616352cd0be4e715da7ba8eb0e6a3');
+    INSERT INTO public.items (id, type, name, value, key) VALUES (4, '\x414d2b386f464a6e6b636d7a526761644f38754843473452635a396556324b3374494858416b794950325a756a50424a7a673d3d', '\x7668617768723634394e737153564e3869547858386f65633757494274466f5a6645764d576a6158336d2f6a487a356a633876354c736442417a45785664365177764843414e45584a38706c6a557862417056493958784f4c58386532476943', '\x9ad1f7b1e4330723f053badb7b4a08e580b33d66b9bc4482d354096181ee37c91c20e0b055327dd4ac88645699d2d6725f40cf21b4ef30a8b332e172d9a82e733c3449484b4b9e41e3d65dc5081698546d75a7181991d62d25be06be879f3321c3c87ef7b974d27f9aaac803fc7377fed6bb8e62c2f62b2d932afc7a550733a8e1f668a7a9f9ef92daf9646463164ef88b21ed2375e8aae114ba523718dcc31b11dc4c48683106d548adebd1665c80d0c92725b1dfe2cfe98875', '\x7edab2d9ece4d96eb05d4324de6d801e706575075bec562f0aadb88bcebf32caa244d4a49ac3251582ae32b4083af192a65bbfbfe36ac17586cacd37');
+    INSERT INTO public.items (id, type, name, value, key) VALUES (2, '\x4a5044614b79564a495373524e4173344d424c754537434665784c374276594542664e6561596366734268536a413d3d', '\x375648694f6e39753130744b3558324d76634c62376871774648365a7230624f364c38733367397668506b6d4b7a346c754c33676a6b30747348676276413d3d', '\x287c540d48670862a50afec052d2504dc936c8e5979aaefbf14aaf5e1599d996a3d344f4c9371b64ec4d48c09806d3ae72c811e648e494942a21987874', '\x70a3fea230fa7e70518b0a9ac2fbbb7765141cc73bc4d8cdc0c9c5d7d705f1bd3c6f44c588a3329ac2f01247c4ee6a04bc6acca08784a106277afa6d');
+    INSERT INTO public.items (id, type, name, value, key) VALUES (5, '\x316136432b44476153766d646f636153343644724b6c664457325055333735754c544a632f766938304a4c546b4265742f63492f3764764b464d2b57', '\x4b4270714d50367a755876346439735a596b5a49514b4f44426755304175496738566e7959356d2b4e6b687332573633545863476f6c6b464f6e524f6642527077794d3d', '\x69d22406b08a0b6fbb506a67734ea44f4822edee4836ffcd77d871d26d576f773372a7ab288a44ef037fd4488c68f466df8701c04385a9e979cc9ed86ad2f10e43c3b2e1b1af3703a5a720c9a33bfe21210cc42c275b9033579599184a69422a39cd33', '\xc6a364a25b243028a94f9e02f5aca742b98efaec5c82c8dfd25afb54625772837fd0cfd536bb9bfaf0216e287732ba1103d5786621a0b46f9ee1afcd');
+    INSERT INTO public.items (id, type, name, value, key) VALUES (6, '\x304c4d426c7232334749466341362f475a71397874476159682b625668764136536f394b58735453454d6145736e30654e334a437537513d', '\x4a303838614a795a6b46346d506d4b3276454161352f5753704465473946353265656a584163415474715832383053737a55454a4a77495036696c365936414a6e6c69383549567631526831504964634e326d7438673d3d', '\x1dbcd4bdffd5b3a0ee4c7db55c6d1f13242d31a36086cac1fdbd528e8c491940faa86190ad53c0a33bf3648c08a42e9348091055709ae834fbed590d4a240e0e3ab0b30a12da1b50443976ef9cc33220373d48f11eb6bb16c8796c8655d83294d3d02cd4e1a7a3db47d24373c0fc81abea62feb7471a8d39fab465c86d5f88d7b03ed43b474b1d8e6b3ca0e270d954ce2e9880402483d5d00e7eb033b1d7e9c6fede3ce9d8d74ce9c888154ebdd5612e5198c6446d4cc2b6e7cb6fffe1d8d6f6737dcd985d6138857a6451c9d16386392c8fa381511730b931a991371a2ce8d0be25956d7e8450a89d15310ed487155812ecdcca9a92f226db00cce50cf753880c154d1bb22b9d26ca32d222f3fa724545f5559b0238e9194e8eefab655e464673403b8680479bbad713be20efd43e1bb3c2eb539ef2fc9bb6046bfab4b039dc02504e9f7a4cd85fe316ad9be723cd9ed7b41bcdce5c924b450389c347b3c2f366818314caf155735d713ddade39b7e5fda3ed89c8159f4c88a8eb8af6ea0122696d9b49b8492b28f1aba9fef04fb0097c2e2fbf878e7ad23e93902a57a95e62cca0fd79b4389291f6035eda1ba589b4a6cda1ae00aa70491e68225fd346d777d1330286f8825230a7526716a380b9edeaac7339c7e163a96288167179daa3d5d2d85beaa06852cdd9d19a7938a2670be322d4b2f9a40317077d58a92b5bdddad01bd8b7f2', '\x270b654626d0c33bed7526fc60d23e8d57d491fd9e503d2249af2756577b6bbc64178cf1e6a7525598407d4e9b478c4abdfb70acf24cd3e5845d32b5');
+    INSERT INTO public.items (id, type, name, value, key) VALUES (7, '\x347733557941714837363057344b2b616f64547442792f594177636a7446535448637949482f672f6b67417264496c37742b376a546b493d', '\x76462f3168653146564c7673712b455967465355522f4e36463249516a6c6c337a536f5477537266662b49754433534c6e34557048335a4b7576574846376d42426a4d7a6a59456a6e68424c69503358744d566163673d3d', '\x0afeab33f895efd0f3123257816e00e00c698e314602f9b2e6c69ed23d5e019401a864face50648b602fa1bcfc1e012fb04872a061dd930d742efd4e4ac1578721af624b25d021cd065c714cde5cddc632b0986a8d9ef5d8f6fe75cd599f6b70b57acf743d00a47c622bd050ae23aa3e26ca7399a1bab9b0314227ced52be43988543e84415340ea8d6a86f08b92a08d3b4ed3d8b42f0f7c1186b671b8d5e045ab787ee2afc017386476bac4599bbef5cdcd4de5c24b77a2abab2434ed385fa24623fb5a66fa7de1c0952c360e92b6d027c341627696ae2f0ef78a229172f91cbeca533b8194405d3611f62adc57bd90c3bae9699937465ba0b7c6aee10e91f5cc5187061edb33c8e0598c5fed2f64669256c02f91', '\xfeff196a56d546b35d2dc7bfd72a7a4b834ee80d1aa25f2b39a11ad6d0cc8763936685b9fc97a7fab992a4b7e1704a1f1fd8873cc039ec0dc7b67a65');
+    INSERT INTO public.items (id, type, name, value, key) VALUES (8, '\x304c4d426c7232334749466341362f475a71397874476159682b625668764136536f394b58735453454d6145736e30654e334a437537513d', '\x4f45553149442b4c4978627a504a7a55434b4e5873375a2f7147317536646835354a4f4b784f4e526a6432316268486930653433554650505a433355674470766563445333744f3549597042564a7763716a384459773d3d', '\x608ad732c0f74c5869ff5d24bb026528694a2752b280471b4e45b5fe271c0973a2554dc68acb83d4827d962d45f22d96c648f8ac91be6b70a292977946f2b077566836dcb7fc769a4cfe646221037b6a829671d7fd059d2dbf7423cb5ee260ec43ca10b4d225dfac606f10ea91a0e67d265a0ba77c349aa924459cc593a50555f5ec240bffa604ab3c231b7f21f8265af5c5654d49be2f62e055f17377597817ca37b79f94506828a3853fe7e8c612372541cd61c0e695a158c77af2cef676ed19d16c62b1974490eb9e03624bd94a23afee9be8550ec8fefbf5a746c81ddbbe143a3ac2e1333e524ffd9165d7f8d2aab57e6402d55bcc38633e2c4b0af837772eb9445506deeec534ece0ecc1e55b9f0abb4d8580c02318004408a3eacfd9e6d9643810fab833c1b5a89cf22af2f1ef07f25d2170c83ee5872d1e5e828ce6f8c1758302c598b9f0100930b2267b8c52250d44e54c6bf18363ff4ef51175bcf615db4320f1a8ab55d1c08cfd479b9be1ebd616ae95d6b454a572b4571d17229b97a8172e31c9820d368f7edd10cf25c5504e9bfb9797ca1584ff7d0e6b762ad63dedf50923bd54fbe76ab9860b74d5c56689585f8fa56a46e62e36c8486dad82a03f334ccb6ad53a940e33903f371c5d7a446ba6c1d6dcacfc2fdcc8017f77dd72d409507bc8355b41d121f19c05b32276c15e11402525830f328478a0c6', '\xd660bbc642847cdc1c227f63ab2cddd0c63e9f43c19144b7b2c8b4e586c5702fd1ede513ce714406ba2881230b6a88b84622a64265e6391eaf95eaf3');
+    INSERT INTO public.items (id, type, name, value, key) VALUES (9, '\x304c4d426c7232334749466341362f475a71397874476159682b625668764136536f394b58735453454d6145736e30654e334a437537513d', '\x344c307050596f6f646468465845673570452f736e7270612b7a77786d776547795a3356435656584a47472b324635457a574b6949684b49546267737432385754784b746d4965614e6271554f5563553058786653673d3d', '\x4b7becdd81669ffb8e0e4400624d61d63aeeface283ee9bf6a4d8ca639a6ea46cbaf29b40a05416ae27c9aadf64261827a354c63bccc69d62d450d177d398ac8a12e42da49b67f252448783e9f7634ae1c171b9d23fee20c45740193a0e22c1bac53189f418b0d5803a2b7c0ce4bbbc60113cfba4be95b429a0aaf90cdfe04612aceaf4e00fcae8a01eb98eefdf513907f98b3a3b1b01af845d5aa9c9c86a6587f43d51526177f9cde635b92b9073fefcc79b5a56c621ab6644d78ce3b5ad8beb1bff3f98b6ee6d03c8b3ecc1a435756180c94d5bcf50e1e1ca13e414d3cd8f155967cb8e8b6fb6b53d985979bb6ebac17c797d0261e88d8f909f55dc44cfdf7e6011313770e1e3a4182f3578e92a2f58fd08fe735bc53dfdccca222c4431bcfff83532ac33d6ef2969c01b7a4b515f9f61efe770510e35405cd838060c5948c5a9447cc3389516bfacbdd9b304dcb0732e4a239758b46674b3ee4306af2eaadfe428d60787256c56b8e2c8699463ac24c9fc88dbb9919c1fc490ac5256fa5ce5a71cdba95cf04215076ecf69f1147bb109414bdbceb28c985b9f0c76d440894891751ac36c2e076ea306bdbf708245c78ec7685b417e62c753e9252d055425a5d868e495966ac9836ba16b03b5c282b53dd4d2c6873c5ef49cecd39b9dfb541000e58c5db921625783663b65a3374f02f95417d0109d8c71395f2e6450290', '\x8ba8067f95f112ef674a2d26f97c51ae939ed3350d2d7442ff7133b944fdad45643a84b77a23eae750c9c5603322646f5b4db5cd45a3d87b0db02379');
+
+
+    --
+    -- Data for Name: metadata; Type: TABLE DATA; Schema: public; Owner: postgres
+    --
+
+    INSERT INTO public.metadata (id, value) VALUES (1, '\x65794a725a586c7a496a70624e5455734d6a49334c4463774c4455784c4445304e6977784e7a55734d5463344c4441734f5445734f5455734e6977324f5377784d544d734e4467734f4463734d7a51734d5467324c4467314c4445784d5377784d6a45734d6a49324c4449784d5377784e7a45734e7a41734e7a59734d5451774c4449774e4377334e7977324f4377784d4459734e6a45734e6a41734e6a63734d5463774c4449794d5377784d7977784e7a4d734e7a51734e544d734d6a45324c4445334f4377334f5377794e4455734d6a4d334c4445794f5377794d7a6b734d6a51344c4449304d4377324d4377314c4445304e7977784f5441734d7a45734d7a6b734d6a41774c4445314e4377784d6a51734d546b304c4449344c4451344c4445304d5377784f5451734d5451314c4445304e4377784d6a55734d54497a4c4449774e7977304f5377784f4441734d6a497a4c4449314d4377784e6a63734e7a4d734e5463734f5459734d6a51794c4449734f4449734d5441344c4459784c446b334c4445794d7977794d4449734e7a67734d544d794c4449784d7977784e6a49734d5451354c4455344c446b784c4445344f4377794d5441734d6a55314c44457a4d7977354e7977784f4467734d5455314c4449314d6977794d4445734e544d734d546b734d5449794c4445774c4463794c4445354e6977794f4377774c4449794d53777a4d7977784d6a55734d6a4d794c4445334d7977794e544d734d6a51794c4445774e4377784d6a63734f5463734d5445324c4445784e5377794e4451734d6a45734e5455734d6a49344c4449774f5377794d7a45734d5445334c4451794c4467334c4445344f4377794d546b734d544d304c4449794d4377784f5445734d546b324c4445344e7977784d4467734e7a51734d6a41794c4445774d7977794e444d734d5463734d6a51774c4449784f5377784c4445794f5377314e5377784d6a45734d5459314c444d324c4467334c4455334c44517a4c4449774d6977784d7a59734d6a55784c4445774e7977784d7a51734d5451314c4445334e6977304d7977784d6a59734d5455354c4445344d6977314d5377784e444d734e7a55734d6a4d344c4445784d4377304d7977794d4451734e5449734d6a49784c4449324c4445334e6977304f5377794d6a51734d546b734d6a497a4c444d774c4445344e7977334e7977784c4445784f5377794e5451734d5455304c4445314c4445314e4377784d6977784d6a51734d6a457a4c4445334d4377784e4463734e444d734d6a45304c44497a4f4377784d6a55734d6a49344c4445324f5377794e6977784e7a63734d54497a4c4445354f4377794d6a6b734d5449314c4449314d7977784d5467734d5449344c4451734d6a49344c4449304e7977784f5467734f544d734d6a41774c4445324c4445344d79777a4d7977784e5467734d5467784c4445324d6977334d6977784d546b734d5455334c4445334e5377784d4449734d6a4d734d6a41304c4445784d7977344d6977334d4377794d7a63734d6a6b734f5451734d54677a4c44457a4d5377794e5455734d6a41344c4463774c44497a4d6977784e6a55734d54597a4c4445324d4377784d544d734d5449334c4449794e7977334d6977784e6a51734e5467734d5459734d7a55734d6a41344c4455734d5449344c4445784c4445324f5377794d544d734d5449734e444d734d6a4d344c4445784f4377354d5377794d444d734d5467794c4451344c4445314e4377784e5377784e4455734e6a46644c434a7459584e305a584a666132563558334e68624851694f6c73354d4377784e7a45734d5467304c4449794e6977794d6a51734d5441774c4449774f4377794d4463734d544d734d5467334c4445774f4377784e6a63734e6a55734d5463354c4449314d6977794d6a4d734f546b734e7a63734e4463734e6a4d734d5441354c44457a4e4377324c4445784d7977794d6a67734d6a55774c4449774f4377784e4449734d6a41354c4445774e5377784e5463734d5445785858303d');
+
+
+    --
+    -- Data for Name: tags_encrypted; Type: TABLE DATA; Schema: public; Owner: postgres
+    --
+
+    INSERT INTO public.tags_encrypted (name, value, item_id) VALUES ('\x95522a37d31b47b1e1701653e07ca00b8b1911f6eba23265c5802e418efc24fe73f2bfb11a4808', '\x95c3fde3d5d12edb40644f5bc6065bc0ea4fdc888f7ca0f9df5fcd8caeafbe5a265e5f4cdfb96f111c3b8014f0239ff92e2d6e60b74aef8d6a894718358f5b75a6', 6);
+    INSERT INTO public.tags_encrypted (name, value, item_id) VALUES ('\xe1ea72434d42c171c393dbf1be03e1d1b328e6f835fbe787b11e5830e687f37da793a645187d6c61dc', '\x9e490d7b7185b925e84401f19fb6c7d7d884296af5242cfb08bfc233268499c178f0a100dfd154118eb67bd6002c9000e65d790d4066961ace301588c3184d3e9eaa66d715281776', 7);
+    INSERT INTO public.tags_encrypted (name, value, item_id) VALUES ('\x5c59298ab9c24958ecbdf958cc793aebc73be6eccea20d512c950f26fcb6469bb298a63fd3', '\x0935c5132051fe0640761eff4304ae23f06468cb42ed46fe15b5e76a691f31e348624ac4831c7bc2e38836a243d11c85817662226a29796e96e10ac07803b25b', 7);
+    INSERT INTO public.tags_encrypted (name, value, item_id) VALUES ('\xda750d2ff211203769d834fecde4d1cf8fd560e5fd1ac7f2f9f8eb071b3b0264', '\xb3bb02fe6a6c10b8ade0b0bae37708635c95613f374af242ed337f7a32a8ee4db7d4', 7);
+    INSERT INTO public.tags_encrypted (name, value, item_id) VALUES ('\x95522a37d31b47b1e1701653e07ca00b8b1911f6eba23265c5802e418efc24fe73f2bfb11a4808', '\xd410633f0e883746a4cb806bb64499f3080eb45f26a2292db438c7a5f7c2161a35042f88a6334856762a5af137539d1ee35bdc62c545e24efcca1cd128844de25b', 8);
+    INSERT INTO public.tags_encrypted (name, value, item_id) VALUES ('\x95522a37d31b47b1e1701653e07ca00b8b1911f6eba23265c5802e418efc24fe73f2bfb11a4808', '\x4286d29eb33d19302b0615bd6cfb259009cf018036c86726784d784fe4b0e714f52e9fb07b44a02c33fc3f807062427c9a3004b940a0854b155273ff4e03a2666e', 9);
+
+
+    --
+    -- Data for Name: tags_plaintext; Type: TABLE DATA; Schema: public; Owner: postgres
+    --
+
+
+
+    --
+    -- Name: items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+    --
+
+    SELECT pg_catalog.setval('public.items_id_seq', 9, true);
+
+
+    --
+    -- Name: metadata_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+    --
+
+    SELECT pg_catalog.setval('public.metadata_id_seq', 1, true);
+
+
+    --
+    -- Name: items items_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+
+    ALTER TABLE ONLY public.items
+        ADD CONSTRAINT items_pkey PRIMARY KEY (id);
+
+
+    --
+    -- Name: metadata metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+
+    ALTER TABLE ONLY public.metadata
+        ADD CONSTRAINT metadata_pkey PRIMARY KEY (id);
+
+
+    --
+    -- Name: tags_encrypted tags_encrypted_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+
+    ALTER TABLE ONLY public.tags_encrypted
+        ADD CONSTRAINT tags_encrypted_pkey PRIMARY KEY (name, item_id);
+
+
+    --
+    -- Name: tags_plaintext tags_plaintext_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+    --
+
+    ALTER TABLE ONLY public.tags_plaintext
+        ADD CONSTRAINT tags_plaintext_pkey PRIMARY KEY (name, item_id);
+
+
+    --
+    -- Name: ix_tags_encrypted_item_id; Type: INDEX; Schema: public; Owner: postgres
+    --
+
+    CREATE INDEX ix_tags_encrypted_item_id ON public.tags_encrypted USING btree (item_id);
+
+
+    --
+    -- Name: ix_tags_encrypted_name; Type: INDEX; Schema: public; Owner: postgres
+    --
+
+    CREATE INDEX ix_tags_encrypted_name ON public.tags_encrypted USING btree (name);
+
+
+    --
+    -- Name: ix_tags_encrypted_value; Type: INDEX; Schema: public; Owner: postgres
+    --
+
+    CREATE INDEX ix_tags_encrypted_value ON public.tags_encrypted USING btree (md5(value));
+
+
+    --
+    -- Name: ix_tags_plaintext_item_id; Type: INDEX; Schema: public; Owner: postgres
+    --
+
+    CREATE INDEX ix_tags_plaintext_item_id ON public.tags_plaintext USING btree (item_id);
+
+
+    --
+    -- Name: ix_tags_plaintext_name; Type: INDEX; Schema: public; Owner: postgres
+    --
+
+    CREATE INDEX ix_tags_plaintext_name ON public.tags_plaintext USING btree (name);
+
+
+    --
+    -- Name: ix_tags_plaintext_value; Type: INDEX; Schema: public; Owner: postgres
+    --
+
+    CREATE INDEX ix_tags_plaintext_value ON public.tags_plaintext USING btree (value);
+
+
+    --
+    -- Name: ux_items_type_name; Type: INDEX; Schema: public; Owner: postgres
+    --
+
+    CREATE UNIQUE INDEX ux_items_type_name ON public.items USING btree (type, name);
+
+
+    --
+    -- Name: ux_metadata_values; Type: INDEX; Schema: public; Owner: postgres
+    --
+
+    CREATE UNIQUE INDEX ux_metadata_values ON public.metadata USING btree (value);
+
+
+    --
+    -- Name: tags_encrypted tags_encrypted_item_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+    --
+
+    ALTER TABLE ONLY public.tags_encrypted
+        ADD CONSTRAINT tags_encrypted_item_id_fkey FOREIGN KEY (item_id) REFERENCES public.items(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+    --
+    -- Name: tags_plaintext tags_plaintext_item_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+    --
+
+    ALTER TABLE ONLY public.tags_plaintext
+        ADD CONSTRAINT tags_plaintext_item_id_fkey FOREIGN KEY (item_id) REFERENCES public.items(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+    --
+    -- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
+    --
+
+    REVOKE USAGE ON SCHEMA public FROM PUBLIC;
+    GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+    --
+    -- PostgreSQL database dump complete
+    --
+

@@ -150,6 +150,11 @@ interface IWalletService {
                             log.debug("HTTP description: ${response.status.description}")
                         }
                     }
+                    install(HttpTimeout) {
+                        requestTimeoutMillis = 30000
+                        connectTimeoutMillis = 30000
+                        socketTimeoutMillis = 30000
+                    }
                     HttpResponseValidator {
                         validateResponse { response: HttpResponse ->
                             val statusCode = response.status.value
@@ -179,7 +184,7 @@ interface IWalletService {
                     }
                     install(Logging) {
                         logger = Logger.DEFAULT
-                        level = LogLevel.BODY
+                        level = LogLevel.ALL
                     }
                     install(JsonFeature) {
                         serializer = JacksonSerializer {

@@ -20,11 +20,14 @@
 package org.eclipse.tractusx.managedidentitywallets.services
 
 import io.ktor.client.*
+import io.ktor.client.features.*
+import io.ktor.client.features.observer.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import okhttp3.OkHttpClient
 import org.eclipse.tractusx.managedidentitywallets.Services
 import org.eclipse.tractusx.managedidentitywallets.models.*
 import org.eclipse.tractusx.managedidentitywallets.models.ssi.VerifiableCredentialIssuanceFlowRequest
@@ -40,6 +43,7 @@ import org.hyperledger.aries.api.jsonld.ProofType
 import org.hyperledger.aries.api.jsonld.VerifiableCredential
 import org.hyperledger.aries.config.GsonConfig
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class AcaPyService(
     private val acaPyConfig: WalletAndAcaPyConfig,
@@ -191,6 +195,13 @@ class AcaPyService(
     }
 
     override fun subscribeForWebSocket(subscriberWallet: WalletExtendedData) {
+
+        var client: OkHttpClient = OkHttpClient().newBuilder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .build()
+
         val wsUrl = acaPyConfig.apiAdminUrl
             .replace("http", "ws")
             .plus("/ws")
@@ -208,6 +219,7 @@ class AcaPyService(
                     Services.webhookService
                 )
             )
+            .client(client)
             .build()
     }
 
