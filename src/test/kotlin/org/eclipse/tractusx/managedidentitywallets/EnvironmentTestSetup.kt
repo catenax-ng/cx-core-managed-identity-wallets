@@ -21,6 +21,7 @@ package org.eclipse.tractusx.managedidentitywallets
 
 import io.ktor.application.*
 import io.ktor.config.*
+import org.eclipse.tractusx.managedidentitywallets.models.ssi.acapy.WalletAndAcaPyConfig
 
 import org.eclipse.tractusx.managedidentitywallets.persistence.repositories.ConnectionRepository
 import org.eclipse.tractusx.managedidentitywallets.persistence.repositories.CredentialRepository
@@ -39,9 +40,21 @@ import java.util.*
 object EnvironmentTestSetup {
 
     const val DEFAULT_BPN = "BPNL00000"
+    const val DEFAULT_DID = "did:sov:ArqouCjqi4RwBXQqjAbQrG"
+    const val DEFAULT_VERKEY = "6Ng3Cu39yTViaEUg1BETpze78nXZqHpb6Q783X2rRhe6"
+    val walletAcapyConfig = WalletAndAcaPyConfig(
+        apiAdminUrl = "apiAdminUrl",
+        networkIdentifier = "networkIdentifier",
+        baseWalletBpn = DEFAULT_BPN,
+        baseWalletDID = DEFAULT_DID,
+        baseWalletVerkey = DEFAULT_VERKEY,
+        adminApiKey = "adminApiKey",
+        baseWalletAdminUrl = "baseWalletAdminUrl",
+        baseWalletAdminApiKey = "baseWalletAdminApiKey"
+    )
+
     const val EXTRA_TEST_BPN = "BPNL0Test"
     const val NETWORK_ID = "local:test"
-    private const val LEDGER_TYPE = "closed"
     const val NONE_REVOKED_ENCODED_LIST = "H4sIAAAAAAAAAO3BMQEAAADCoPVPbQwfoAAAAAAAAAAAAAAAAAAAAIC3AYbSVKsAQAAA"
     const val ZERO_THIRD_REVOKED_ENCODED_LIST ="H4sIAAAAAAAAAO3BIQEAAAACIKv/DzvDAjQAAAAAAAAAAAAAAAAAAADA2wBHo2oBAEAAAA=="
     private val walletRepository = WalletRepository()
@@ -49,7 +62,7 @@ object EnvironmentTestSetup {
     val connectionRepository = ConnectionRepository()
     val webhookRepository = WebhookRepository()
 
-    private val acaPyMockedService = AcaPyMockedService(DEFAULT_BPN, NETWORK_ID, LEDGER_TYPE)
+    private val acaPyMockedService = AcaPyMockedService(DEFAULT_BPN, NETWORK_ID)
     val revocationMockedService = RevocationMockedService(NETWORK_ID)
     val webhookService = IWebhookService.createWebhookService(webhookRepository)
     val utilsService = UtilsService(NETWORK_ID)
@@ -110,8 +123,6 @@ object EnvironmentTestSetup {
 
             put("revocation.baseUrl", System.getenv("REVOCATION_URL") ?: "http://0.0.0.0:8086")
             put("revocation.createStatusListCredentialAtHour", System.getenv("REVOCATION_CREATE_STATUS_LIST_CREDENTIAL_AT_HOUR") ?: "3")
-
-            put("ledger.type", System.getenv("LEDGER_TYPE") ?: "closed")
 
         }
         // just a keepAliveConnection

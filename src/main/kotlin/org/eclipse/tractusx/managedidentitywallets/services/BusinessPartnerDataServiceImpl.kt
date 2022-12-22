@@ -25,10 +25,7 @@ import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -132,7 +129,7 @@ class BusinessPartnerDataServiceImpl(
         data: Any?
     ): Deferred<Boolean> =
         GlobalScope.async {
-            val catenaXWalletDid = walletService.getCatenaXWalletWithoutSecrets().did
+            val catenaXWalletDid = walletService.getCatenaXWallet().did
             val credentialFlowRequest: VerifiableCredentialRequestWithoutIssuerDto =
                 prepareCatenaXCredential(targetWallet.bpn, type, data)
             val vCIssuanceFlowRequest = VerifiableCredentialIssuanceFlowRequest(
@@ -163,7 +160,7 @@ class BusinessPartnerDataServiceImpl(
     ): Boolean = GlobalScope.async {
         runBlocking {
             val catenaXCredentialsOfBpn = walletService.getCredentials(
-                walletService.getCatenaXWalletWithoutSecrets().bpn, holder.bpn, null, null
+                walletService.getCatenaXWallet().bpn, holder.bpn, null, null
             )
             if (businessPartnerData != null) {
                 // Name Credentials
